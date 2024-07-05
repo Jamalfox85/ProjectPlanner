@@ -20,6 +20,5 @@ app.use(createPinia());
 app.use(router);
 
 app.config.globalProperties.$colors = fetchColors();
-console.log(app.config.globalProperties.$colors);
 
 app.mount("#app");

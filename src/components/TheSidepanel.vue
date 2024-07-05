@@ -24,7 +24,7 @@ export default {
         { name: "Features", path: "/features", active: path === "/features" },
         { name: "Branding", path: "/branding", active: path === "/branding" },
         { name: "Sitemap", path: "/sitemap", active: path === "/sitemap" },
-        { name: "Layouts", path: "/layouts", active: path === "/layouts" },
+        { name: "Tables", path: "/tables", active: path === "/tables" },
       ];
     },
   },

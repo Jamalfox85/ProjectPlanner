@@ -7,7 +7,7 @@
         </div>
         <div class="flex items-center">
           <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon>
-          <h1 class="current-title">{{ currentTitle }}</h1>
+          <h1 class="current-title">{{ currentTitle.title }}</h1>
           <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon>
         </div>
       </div>
@@ -17,7 +17,7 @@
             <p>New Title Idea</p>
           </div>
           <div class="w-full flex items-center">
-            <n-input class="title-input rounded-full mr-2 text-xl p-2" placeholder="New Title Idea" v-model:value="title" />
+            <n-input class="title-input rounded-full mr-2 text-xl p-2" placeholder="New Title Idea" v-model:value="title" @keypress.enter="submitNewTitle" />
             <n-button class="rounded-full submit-bttn" @click="submitNewTitle">Submit</n-button>
           </div>
         </div>
@@ -32,7 +32,7 @@
               </div>
               <div class="title-list">
                 <div class="title-item" v-for="title in favoriteTitles">
-                  <p class="title-text">{{ title }}</p>
+                  <p class="title-text">{{ title.title }}</p>
                   <n-icon v-if="title == currentTitle"><StarEmphasis24Filled /></n-icon>
                   <n-icon v-else class="makeCurrentTitle" @click="setCurrentTitle(title, true)"><StarEmphasis24Regular /></n-icon>
                   <n-icon class="removeFromFavorites" @click="removeFromFavorites(title)"><Star20Filled /></n-icon>
@@ -44,7 +44,7 @@
               <div class="project-label"><p>Past Title Ideas</p></div>
               <div class="title-list">
                 <div class="title-item" v-for="title in pastTitles">
-                  <p class="title-text">{{ title }}</p>
+                  <p class="title-text">{{ title.title }}</p>
                   <n-icon class="makeCurrentTitle" @click="setCurrentTitle(title)"><StarEmphasis24Regular /></n-icon>
                   <n-icon class="addToFavorites" @click="addToFavorites(title)"><Star20Regular /></n-icon>
                   <n-icon class="remove" @click="removeFromPastTitles(title)"><PresenceBlocked12Regular /></n-icon>
@@ -61,7 +61,7 @@
             </div>
             <div class="title-list">
               <div class="title-item" v-for="title in aiTitles">
-                <p class="title-text">{{ title }}</p>
+                <p class="title-text">{{ title.title }}</p>
                 <n-icon class="makeCurrentTitle" @click="setCurrentTitle(title)"><StarEmphasis24Regular /></n-icon>
                 <n-icon class="addToFavorites" @click="addToFavorites(title)"><Star20Regular /></n-icon>
                 <n-icon class="remove" @click="removeFromAISuggestions(title)"><PresenceBlocked12Regular /></n-icon>
@@ -77,6 +77,8 @@
 <script lang="ts">
 import { NInput, NButton, NIcon } from "naive-ui";
 import { StarEmphasis24Regular, StarEmphasis24Filled, Sparkle20Regular, Star20Filled, Star20Regular, PresenceBlocked12Regular } from "@vicons/fluent";
+import { supabase } from "@/lib/supabaseClient";
+
 export default {
   components: {
     NInput,
@@ -92,51 +94,98 @@ export default {
   data() {
     return {
       title: "",
-      currentTitle: "Project Planner",
-      favoriteTitles: ["Favorite Title #1", "Favorite Title #2", "Favorite Title #3", "Favorite Title #4"],
-      aiTitles: ["AI Title #1", "AI Title #2", "AI Title #3", "AI Title #4"],
-      pastTitles: ["Past Title #1", "Past Title #2", "Past Title #3", "Past Title #4"],
+      currentTitle: { title: "" },
+      favoriteTitles: [],
+      aiTitles: [],
+      pastTitles: [],
     };
   },
   computed: {},
   methods: {
-    submitNewTitle() {
-      //@ts-ignore
-      window.$message.success("New Title Added!");
-      this.pastTitles.unshift(this.title);
-      this.title = "";
+    async submitNewTitle() {
+      let newTitle = {
+        title: this.title,
+        is_current_title: false,
+        is_favorite_title: false,
+      };
+      const { data, error } = await supabase.from("titles").insert(newTitle).select();
+      if (data) {
+        //@ts-ignore
+        window.$message.success("New Title Added!");
+        this.pastTitles.unshift(data[0]);
+        this.title = "";
+      } else {
+        //@ts-ignore
+        window.$message.error("Error Adding New Title");
+      }
     },
-    setCurrentTitle(title: string, favorite: boolean = false) {
+    setCurrentTitle(title: object, favorite: boolean = false) {
       this.currentTitle = title;
       if (!favorite) {
-        this.addToFavorites(title);
+        this.favoriteTitles.unshift(title);
+        this.pastTitles = this.pastTitles.filter((t) => t !== title);
+        this.aiTitles = this.aiTitles.filter((t) => t !== title);
       }
+      this.updateTitleInDB(title, true, true);
       //@ts-ignore
       window.$message.success("Current Title Updated!");
     },
-    addToFavorites(title: string) {
+    addToFavorites(title: object) {
       this.favoriteTitles.unshift(title);
       this.pastTitles = this.pastTitles.filter((t) => t !== title);
       this.aiTitles = this.aiTitles.filter((t) => t !== title);
+      this.updateTitleInDB(title, false, true);
       //@ts-ignore
       window.$message.success("Title Added to Favorites!");
     },
-    removeFromFavorites(title: string) {
+    removeFromFavorites(title: object) {
       this.favoriteTitles = this.favoriteTitles.filter((t) => t !== title);
       this.pastTitles.unshift(title);
+      this.updateTitleInDB(title, false, false);
       //@ts-ignore
       window.$message.warning("Title Removed from Favorites");
     },
-    removeFromPastTitles(title: string) {
+    async removeFromPastTitles(title: any) {
+      const { error } = await supabase.from("titles").delete().eq("id", title.id);
+      if (error) {
+        //@ts-ignore
+        window.$message.error("Error Removing Title");
+        return;
+      }
       this.pastTitles = this.pastTitles.filter((t) => t !== title);
+
       //@ts-ignore
       window.$message.warning("Title Removed from Past Titles");
     },
-    removeFromAISuggestions(title: string) {
+    removeFromAISuggestions(title: object) {
       this.aiTitles = this.aiTitles.filter((t) => t !== title);
       //@ts-ignore
       window.$message.warning("Title Removed from AI Suggestions");
     },
+    async updateTitleInDB(title, is_current_title = false, is_favorite_title = false) {
+      let currentTitle = is_current_title;
+      let favoriteTitle = is_favorite_title;
+      if ((is_current_title = true)) {
+        const { data: arrayData, error: arrayError } = await supabase.from("titles").update({ is_current_title: false }).select("*");
+      }
+      const { data, error } = await supabase.from("titles").update({ is_current_title: currentTitle, is_favorite_title: favoriteTitle }).eq("id", title.id).select();
+    },
+  },
+  async mounted() {
+    const { data: titles, error } = await supabase.from("titles").select("*");
+    titles.forEach((title) => {
+      if (title.is_current_title) {
+        this.currentTitle = title;
+      }
+      if (title.is_favorite_title) {
+        this.favoriteTitles.push(title);
+      } else {
+        this.pastTitles.push(title);
+      }
+      if (this.currentTitle.title == "") {
+        this.currentTitle = this.favoriteTitles[0] || this.pastTitles[0] || this.aiTitles[0];
+      }
+    });
   },
 };
 </script>
@@ -144,7 +193,6 @@ export default {
 <style scoped lang="scss">
 .title_wrapper {
   padding: 2em;
-  flex-grow: 1;
   height: 100%;
   background-color: var(--secondary);
   .project-label {

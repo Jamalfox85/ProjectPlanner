@@ -3,8 +3,8 @@
     <div class="home_wrapper">
       <!-- TITLE -->
       <div class="project-group">
-        <div class="project-label" @click="this.$router.push('/title')">
-          <p>Title</p>
+        <div class="project-label">
+          <p>Login</p>
           <n-icon>
             <TextEditStyle20Filled />
           </n-icon>
@@ -17,7 +17,7 @@
         <div class="flex flex-col w-3/4">
           <!-- DESCRIPTION -->
           <div class="project-group">
-            <div class="project-label" @click="this.$router.push('/description')">
+            <div class="project-label">
               <p>Description</p>
               <n-icon>
                 <TextEditStyle20Filled />
@@ -30,7 +30,7 @@
           <div class="flex">
             <!-- BRANDING -->
             <div class="project-group w-1/2">
-              <div class="project-label" @click="this.$router.push('/branding')">
+              <div class="project-label">
                 <p>Branding</p>
                 <n-icon>
                   <TextEditStyle20Filled />
@@ -48,14 +48,20 @@
             </div>
             <!-- Pages -->
             <div class="project-group w-1/2">
-              <div class="project-label" @click="this.$router.push('/sitemap')">
+              <div class="project-label">
                 <p>Site Map</p>
                 <n-icon>
                   <TextEditStyle20Filled />
                 </n-icon>
               </div>
               <div class="project-section-content">
-                <!-- Content -->
+                <div class="project-colors">
+                  <div class="project-color" :style="{ backgroundColor: 'var(--primary)' }"></div>
+                  <div class="project-color" :style="{ backgroundColor: 'var(--secondary)' }"></div>
+                  <div class="project-color" :style="{ backgroundColor: 'var(--tertiary)' }"></div>
+                  <div class="project-color" :style="{ backgroundColor: 'var(--dark)' }"></div>
+                  <div class="project-color" :style="{ backgroundColor: 'var(--light)' }"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -63,7 +69,7 @@
         <div class="flex flex-col w-1/4">
           <!-- FEATURES -->
           <div class="project-group">
-            <div class="project-label" @click="this.$router.push('/features')">
+            <div class="project-label">
               <p>Features</p>
               <n-icon>
                 <TextEditStyle20Filled />
@@ -81,18 +87,7 @@
           </div>
         </div>
       </div>
-      <!-- Tables -->
-      <div class="project-group">
-        <div class="project-label" @click="this.$router.push('/tables')">
-          <p>Tables</p>
-          <n-icon>
-            <TextEditStyle20Filled />
-          </n-icon>
-        </div>
-        <div class="project-section-content">
-          <!-- Content -->
-        </div>
-      </div>
+      <h1 class="border-2 border-red-500">Test</h1>
     </div>
   </main>
 </template>
@@ -122,7 +117,7 @@ export default {
   background-color: var(--light);
   flex: 1;
   height: 100%;
-  padding: 2em;
+  padding: 1.5em;
   .project-group {
     margin-bottom: 24px;
     padding: 1em;
@@ -151,7 +146,6 @@ export default {
       .primary-project-title {
         color: var(--dark);
         font-size: 4em;
-        font-weight: bold;
         margin-right: 12px;
       }
       .project-description {

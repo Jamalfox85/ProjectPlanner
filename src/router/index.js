@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { supabase } from "@/lib/supabaseClient";
+import { userStore } from "@/stores/userStore";
 import Home from "../views/Home.vue";
 import Title from "../views/Title.vue";
 import Description from "../views/Description.vue";
@@ -6,6 +8,7 @@ import Features from "../views/Features.vue";
 import Tables from "../views/Tables.vue";
 import Branding from "../views/Branding.vue";
 import Sitemap from "../views/Sitemap.vue";
+import Login from "../views/Login.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,7 +48,23 @@ const router = createRouter({
       name: "sitemap",
       component: Sitemap,
     },
+    {
+      path: "/login",
+      name: "login",
+      component: Login,
+    },
   ],
 });
+
+// router.beforeEach(async (to, from, next) => {
+//   const { data, error } = await supabase.auth.getSession();
+//   if (data.session == null && to.path !== "/login") {
+//     next({ name: "login" });
+//     return false;
+//   } else {
+//     userStore().setSession(data.session);
+//     next();
+//   }
+// });
 
 export default router;

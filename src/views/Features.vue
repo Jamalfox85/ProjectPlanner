@@ -1,28 +1,245 @@
 <template>
   <main>
-    <div class="home_wrapper">
-      <h1 class="home">Home</h1>
-      <button @click="naiveuitest">Test</button>
+    <div class="features_wrapper">
+      <div class="features-header flex items-center justify-between">
+        <h1>Features</h1>
+        <n-icon class="mx-2 addFeature cursor-pointer" @click="showAddFeatureDrawer = true"><AddCircle16Regular /></n-icon>
+      </div>
+      <div class="features-main flex">
+        <div class="features-column w-1/3 m-2">
+          <h2 class="text-2xl text-center mb-4 font-bold">MVP Features</h2>
+          <div class="feature-group" v-for="feature in mvpFeatures">
+            <div class="feature-group-header flex justify-between">
+              <p class="feature-title">{{ feature.title }}</p>
+              <div class="icons flex">
+                <n-icon class="mx-2 removeFromMVPFeatures" @click="removeFromMVPFeatures(feature)"><StarEmphasis24Filled /></n-icon>
+              </div>
+            </div>
+            <div class="feature-description">
+              <p>{{ feature.description }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="features-column w-1/3 m-2">
+          <h2 class="text-2xl text-center mb-4 font-bold">Long-Term Features</h2>
+          <div class="feature-group" v-for="feature in longTermFeatures">
+            <div class="feature-group-header flex justify-between">
+              <p class="feature-title">{{ feature.title }}</p>
+              <div class="icons flex">
+                <n-icon class="mx-2 addToMVPFeatures" @click="addToMVPFeatures(feature)"><Star20Regular /></n-icon>
+                <n-icon class="removeFeature" @click="removeFeature(feature)"><Delete16Regular /></n-icon>
+              </div>
+            </div>
+            <div class="feature-description">
+              <p>{{ feature.description }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="features-column w-1/3 m-2">
+          <div class="flex items-center justify-center mb-4">
+            <n-icon class="mx-2 text-3xl"><Sparkle20Regular /></n-icon>
+            <h2 class="text-2xl text-center font-bold">Recommended Features</h2>
+            <n-icon class="mx-2 text-3xl"><Sparkle20Regular /></n-icon>
+          </div>
+          <div class="feature-group" v-for="feature in recommendedFeatures">
+            <div class="feature-group-header flex justify-between">
+              <p class="feature-title">{{ feature.title }}</p>
+              <div class="icons flex">
+                <n-icon class="mx-2 addFeature" @click="addRecommendedFeature(feature)"><AddCircle16Regular /></n-icon>
+              </div>
+            </div>
+            <div class="feature-description">
+              <p>{{ feature.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+    <n-drawer v-model:show="showAddFeatureDrawer" :width="502" placement="right">
+      <n-drawer-content title="Add Feature">
+        <div class="p-4">
+          <p class="font-bold mx-2">Feature Title</p>
+          <n-input v-model:value="featureTitle" placeholder="Feature Title" size="large" class="mb-4" />
+          <p class="font-bold mx-2">Feature Description</p>
+          <n-input v-model:value="featureDescription" placeholder="Feature Description" size="large" type="textarea" class="mb-4" />
+          <n-button type="primary" size="large" @click="addNewFeature">Add Feature</n-button>
+        </div>
+      </n-drawer-content>
+    </n-drawer>
   </main>
 </template>
 
 <script lang="ts">
+import { NIcon, NDrawer, NDrawerContent, NInput, NButton } from "naive-ui";
+import { Sparkle20Regular, StarEmphasis24Filled, Star20Regular, AddCircle16Regular, Delete16Regular } from "@vicons/fluent";
+
 export default {
+  components: {
+    NIcon,
+    NDrawer,
+    NDrawerContent,
+    NInput,
+    NButton,
+    Sparkle20Regular,
+    StarEmphasis24Filled,
+    Star20Regular,
+    AddCircle16Regular,
+    Delete16Regular,
+  },
   data() {
-    return {};
+    return {
+      showAddFeatureDrawer: false,
+      featureTitle: "",
+      featureDescription: "",
+      mvpFeatures: [
+        {
+          title: "Feature 1",
+          description: "Feature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 description",
+        },
+        {
+          title: "Feature 2",
+          description: "Feature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 description",
+        },
+        {
+          title: "Feature 3",
+          description: "Feature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 description",
+        },
+      ],
+      longTermFeatures: [
+        {
+          title: "Feature 1",
+          description: "Feature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 description",
+        },
+        {
+          title: "Feature 2",
+          description: "Feature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 description",
+        },
+        {
+          title: "Feature 3",
+          description: "Feature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 description",
+        },
+      ],
+      recommendedFeatures: [
+        {
+          title: "Feature 1",
+          description: "Feature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 description",
+        },
+        {
+          title: "Feature 2",
+          description: "Feature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 description",
+        },
+        {
+          title: "Feature 3",
+          description: "Feature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 description",
+        },
+      ],
+    };
   },
   methods: {
     naiveuitest() {
       //@ts-ignore
       window.$message.success("naiveuitest");
     },
+    addToMVPFeatures(feature) {
+      this.mvpFeatures.unshift(feature);
+      this.longTermFeatures = this.longTermFeatures.filter((f) => f !== feature);
+      //@ts-ignore
+      window.$message.success("Feature Added to MVP Features");
+    },
+    removeFromMVPFeatures(feature) {
+      this.longTermFeatures.unshift(feature);
+      this.mvpFeatures = this.mvpFeatures.filter((f) => f !== feature);
+      //@ts-ignore
+      window.$message.warning("Feature Removed from MVP Features");
+    },
+    addNewFeature() {
+      this.longTermFeatures.unshift({
+        title: this.featureTitle,
+        description: this.featureDescription,
+      });
+      this.featureTitle = "";
+      this.featureDescription = "";
+      this.showAddFeatureDrawer = false;
+      //@ts-ignore
+      window.$message.success("Feature Added");
+    },
+    addRecommendedFeature(feature) {
+      this.longTermFeatures.unshift(feature);
+      this.recommendedFeatures = this.recommendedFeatures.filter((f) => f !== feature);
+      //@ts-ignore
+      window.$message.success("Feature Added to Recommended Features");
+    },
+    removeFeature(feature) {
+      this.longTermFeatures = this.longTermFeatures.filter((f) => f !== feature);
+      //@ts-ignore
+      window.$message.warning("Feature Removed");
+    },
   },
 };
 </script>
 
-<style scoped lang="scss">
-.home_wrapper {
+<style lang="scss">
+.features_wrapper {
+  height: 100%;
+  padding: 2em;
   background-color: var(--primary);
+  color: var(--light);
+  .features-header {
+    font-size: 4em;
+    font-weight: bold;
+    i {
+      &:hover {
+        color: var(--tertiary);
+      }
+    }
+  }
+  .features-main {
+    .features-column {
+      padding: 1em;
+      .feature-group {
+        background-color: var(--light);
+        color: var(--dark);
+        padding: 1em;
+        border-radius: 0.5em;
+        margin-bottom: 1em;
+
+        .feature-group-header {
+          border-bottom: solid 2px;
+          padding: 4px;
+          margin-bottom: 8px;
+          .feature-title {
+            font-size: 1.25em;
+            font-weight: bold;
+          }
+          .icons {
+            i {
+              font-size: 2em;
+              cursor: pointer;
+              &.removeFromMVPFeatures {
+                &:hover {
+                  color: var(--tertiary);
+                }
+              }
+              &.addToMVPFeatures {
+                &:hover {
+                  color: var(--tertiary);
+                }
+              }
+              &.addFeature {
+                &:hover {
+                  color: var(--tertiary);
+                }
+              }
+              &.removeFeature {
+                &:hover {
+                  color: var(--tertiary);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 </style>
