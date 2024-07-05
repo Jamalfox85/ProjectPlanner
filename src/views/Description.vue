@@ -19,7 +19,7 @@
             <div class="project-label mb-2"><p>Extended Summary</p></div>
             <n-input v-model:value="extendedSummary" type="textarea" placeholder="Extended Summary" />
           </div>
-          <n-button class="save-bttn rounded-lg text-lg">Save</n-button>
+          <n-button class="save-bttn rounded-lg text-lg" @click="saveDescriptions">Save</n-button>
         </div>
         <div class="ai-description-details w-1/2 m-4 p-8">
           <h2 class="text-2xl font-bold text-center m-4 mb-8">AI Recommendations</h2>
@@ -64,6 +64,7 @@
 <script lang="ts">
 import { NInput, NIcon, NButton } from "naive-ui";
 import { Sparkle20Regular } from "@vicons/fluent";
+import { supabase } from "@/lib/supabaseClient";
 
 export default {
   components: {
@@ -74,6 +75,7 @@ export default {
   },
   data() {
     return {
+      description: {},
       elevatorPitch: "",
       shortSummary: "",
       extendedSummary: "",
@@ -84,6 +86,28 @@ export default {
       //@ts-ignore
       window.$message.success("naiveuitest");
     },
+    async saveDescriptions() {
+      let updatedDescription = {
+        elevator_pitch: this.elevatorPitch,
+        short_summary: this.shortSummary,
+        extended_summary: this.extendedSummary,
+      };
+      const { data, error } = await supabase.from("descriptions").update(updatedDescription).eq("id", this.description.id).select("*");
+      if (error) {
+        //@ts-ignore
+        window.$message.error("Error saving descriptions");
+        return;
+      }
+      //@ts-ignore
+      window.$message.success("Descriptions Saved!");
+    },
+  },
+  async mounted() {
+    let { data: descriptions, error } = await supabase.from("descriptions").select("*");
+    this.description = descriptions[0];
+    this.elevatorPitch = descriptions[0].elevator_pitch;
+    this.shortSummary = descriptions[0].short_summary;
+    this.extendedSummary = descriptions[0].extended_summary;
   },
 };
 </script>

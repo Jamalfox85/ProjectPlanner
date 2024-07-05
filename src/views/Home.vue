@@ -10,7 +10,7 @@
           </n-icon>
         </div>
         <div class="project-section-content">
-          <h1 class="primary-project-title">Home</h1>
+          <h1 class="primary-project-title">{{ this.title.title || "Home" }}</h1>
         </div>
       </div>
       <div class="flex justify-center">
@@ -100,19 +100,29 @@
 <script lang="ts">
 import { TextEditStyle20Filled } from "@vicons/fluent";
 import { NIcon } from "naive-ui";
+import { supabase } from "@/lib/supabaseClient";
+
 export default {
   components: {
     NIcon,
     TextEditStyle20Filled,
   },
   data() {
-    return {};
+    return {
+      title: {},
+    };
   },
   methods: {
     naiveuitest() {
       //@ts-ignore
       window.$message.success("naiveuitest");
     },
+  },
+  async mounted() {
+    const { data: titles, error } = await supabase.from("titles").select("*").eq("is_current_title", true);
+    if (titles.length > 0) {
+      this.title = titles[0];
+    }
   },
 };
 </script>

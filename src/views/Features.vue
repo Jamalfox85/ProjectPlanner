@@ -72,6 +72,7 @@
 <script lang="ts">
 import { NIcon, NDrawer, NDrawerContent, NInput, NButton } from "naive-ui";
 import { Sparkle20Regular, StarEmphasis24Filled, Star20Regular, AddCircle16Regular, Delete16Regular } from "@vicons/fluent";
+import { supabase } from "@/lib/supabaseClient";
 
 export default {
   components: {
@@ -91,68 +92,48 @@ export default {
       showAddFeatureDrawer: false,
       featureTitle: "",
       featureDescription: "",
-      mvpFeatures: [
-        {
-          title: "Feature 1",
-          description: "Feature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 description",
-        },
-        {
-          title: "Feature 2",
-          description: "Feature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 description",
-        },
-        {
-          title: "Feature 3",
-          description: "Feature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 description",
-        },
-      ],
-      longTermFeatures: [
-        {
-          title: "Feature 1",
-          description: "Feature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 description",
-        },
-        {
-          title: "Feature 2",
-          description: "Feature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 description",
-        },
-        {
-          title: "Feature 3",
-          description: "Feature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 description",
-        },
-      ],
-      recommendedFeatures: [
-        {
-          title: "Feature 1",
-          description: "Feature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 descriptionFeature 1 description",
-        },
-        {
-          title: "Feature 2",
-          description: "Feature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 descriptionFeature 2 description",
-        },
-        {
-          title: "Feature 3",
-          description: "Feature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 descriptionFeature 3 description",
-        },
-      ],
+      mvpFeatures: [],
+      longTermFeatures: [],
+      recommendedFeatures: [],
     };
   },
   methods: {
-    naiveuitest() {
-      //@ts-ignore
-      window.$message.success("naiveuitest");
-    },
-    addToMVPFeatures(feature) {
+    async addToMVPFeatures(feature) {
+      const { data, error } = await supabase.from("features").update({ is_mvp: true }).eq("id", feature.id).select();
+      if (error) {
+        //@ts-ignore
+        window.$message.error("Error Adding Feature to MVP Features");
+        return;
+      }
       this.mvpFeatures.unshift(feature);
       this.longTermFeatures = this.longTermFeatures.filter((f) => f !== feature);
       //@ts-ignore
       window.$message.success("Feature Added to MVP Features");
     },
-    removeFromMVPFeatures(feature) {
+    async removeFromMVPFeatures(feature) {
+      const { data, error } = await supabase.from("features").update({ is_mvp: false }).eq("id", feature.id).select();
+      if (error) {
+        //@ts-ignore
+        window.$message.error("Error Removing Feature from MVP Features");
+        return;
+      }
       this.longTermFeatures.unshift(feature);
       this.mvpFeatures = this.mvpFeatures.filter((f) => f !== feature);
       //@ts-ignore
       window.$message.warning("Feature Removed from MVP Features");
     },
-    addNewFeature() {
+    async addNewFeature() {
+      let newFeature = {
+        title: this.featureTitle,
+        description: this.featureDescription,
+        is_mvp: false,
+      };
+      const { data, error } = await supabase.from("features").insert(newFeature).select();
+      if (error) {
+        //@ts-ignore
+        window.$message.error("Error Adding New Feature");
+        return;
+      }
       this.longTermFeatures.unshift({
         title: this.featureTitle,
         description: this.featureDescription,
@@ -169,11 +150,27 @@ export default {
       //@ts-ignore
       window.$message.success("Feature Added to Recommended Features");
     },
-    removeFeature(feature) {
+    async removeFeature(feature) {
+      const { error } = await supabase.from("features").delete().eq("id", feature.id);
+      if (error) {
+        //@ts-ignore
+        window.$message.error("Error Removing Feature");
+        return;
+      }
       this.longTermFeatures = this.longTermFeatures.filter((f) => f !== feature);
       //@ts-ignore
       window.$message.warning("Feature Removed");
     },
+  },
+  async mounted() {
+    const { data: features, error } = await supabase.from("features").select("*");
+    features.forEach((feature) => {
+      if (feature.is_mvp) {
+        this.mvpFeatures.push(feature);
+      } else {
+        this.longTermFeatures.push(feature);
+      }
+    });
   },
 };
 </script>
