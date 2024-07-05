@@ -41,7 +41,8 @@
             <h2 class="text-2xl text-center font-bold">Recommended Features</h2>
             <n-icon class="mx-2 text-3xl"><Sparkle20Regular /></n-icon>
           </div>
-          <div class="feature-group" v-for="feature in recommendedFeatures">
+          <n-button v-if="recommendedFeatures.length < 1" class="generate-feature-recommendations-bttn" @click="generateRecommendations">Generate Recommendations</n-button>
+          <div v-else class="feature-group" v-for="feature in recommendedFeatures">
             <div class="feature-group-header flex justify-between">
               <p class="feature-title">{{ feature.title }}</p>
               <div class="icons flex">
@@ -73,6 +74,7 @@
 import { NIcon, NDrawer, NDrawerContent, NInput, NButton } from "naive-ui";
 import { Sparkle20Regular, StarEmphasis24Filled, Star20Regular, AddCircle16Regular, Delete16Regular } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
+import { getFeatureRecommendations } from "@/services/openai.js";
 
 export default {
   components: {
@@ -144,8 +146,19 @@ export default {
       //@ts-ignore
       window.$message.success("Feature Added");
     },
-    addRecommendedFeature(feature) {
-      this.longTermFeatures.unshift(feature);
+    async addRecommendedFeature(feature) {
+      let newFeature = {
+        title: feature.title,
+        description: feature.description,
+        is_mvp: false,
+      };
+      const { data, error } = await supabase.from("features").insert(newFeature).select();
+      if (error) {
+        //@ts-ignore
+        window.$message.error("Error Adding Recommended Feature");
+        return;
+      }
+      this.longTermFeatures.unshift(data[0]);
       this.recommendedFeatures = this.recommendedFeatures.filter((f) => f !== feature);
       //@ts-ignore
       window.$message.success("Feature Added to Recommended Features");
@@ -160,6 +173,10 @@ export default {
       this.longTermFeatures = this.longTermFeatures.filter((f) => f !== feature);
       //@ts-ignore
       window.$message.warning("Feature Removed");
+    },
+    async generateRecommendations() {
+      let recommendations = await getFeatureRecommendations([...this.mvpFeatures, ...this.longTermFeatures], "App to help solo developers plan projects before development");
+      this.recommendedFeatures = JSON.parse(recommendations);
     },
   },
   async mounted() {
@@ -193,6 +210,13 @@ export default {
   .features-main {
     .features-column {
       padding: 1em;
+      display: flex;
+      flex-direction: column;
+      .generate-feature-recommendations-bttn {
+        background-color: var(--light);
+        color: var(--primary);
+        margin: 0 auto;
+      }
       .feature-group {
         background-color: var(--light);
         color: var(--dark);

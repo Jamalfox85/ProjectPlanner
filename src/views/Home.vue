@@ -24,7 +24,17 @@
               </n-icon>
             </div>
             <div class="project-section-content">
-              <p class="project-description">Application geared towards helping solo-developers plan projects. From titles, to description, to branding, to features. Application geared towards helping solo-developers plan projects. From titles, to description, to branding, to features. Application geared towards helping solo-developers plan projects. From titles, to description, to branding, to features.</p>
+              <n-tabs type="line" animated :default-value="'short_summary'">
+                <n-tab-pane name="elevator_pitch" tab="Elevator Pitch">
+                  <p class="project-description">{{ description.elevator_pitch }}</p>
+                </n-tab-pane>
+                <n-tab-pane name="short_summary" tab="Short Summary">
+                  <p class="project-description">{{ description.short_summary }}</p>
+                </n-tab-pane>
+                <n-tab-pane name="extended_summary" tab="Extended Summary">
+                  <p class="project-description">{{ description.extended_summary }}</p>
+                </n-tab-pane>
+              </n-tabs>
             </div>
           </div>
           <div class="flex">
@@ -69,13 +79,13 @@
                 <TextEditStyle20Filled />
               </n-icon>
             </div>
-            <div class="project-section-content">
+            <div class="project-section-content feature-section-content">
               <ul class="project-features">
-                <li>Task management</li>
-                <li>Deadline tracking</li>
-                <li>Collaboration tools</li>
-                <li>Progress tracking</li>
-                <li>File sharing</li>
+                <n-collapse>
+                  <n-collapse-item v-for="feature in features" :title="feature.title" :name="feature.id">
+                    <div>{{ feature.description }}</div>
+                  </n-collapse-item>
+                </n-collapse>
               </ul>
             </div>
           </div>
@@ -97,19 +107,25 @@
   </main>
 </template>
 
-<script lang="ts">
+<script>
 import { TextEditStyle20Filled } from "@vicons/fluent";
-import { NIcon } from "naive-ui";
+import { NIcon, NTabs, NTabPane, NCollapse, NCollapseItem } from "naive-ui";
 import { supabase } from "@/lib/supabaseClient";
 
 export default {
   components: {
     NIcon,
+    NTabs,
+    NTabPane,
+    NCollapse,
+    NCollapseItem,
     TextEditStyle20Filled,
   },
   data() {
     return {
       title: {},
+      description: {},
+      features: [],
     };
   },
   methods: {
@@ -123,11 +139,21 @@ export default {
     if (titles.length > 0) {
       this.title = titles[0];
     }
+
+    const { data: descriptions, error: descriptionError } = await supabase.from("descriptions").select("*");
+    if (descriptions.length > 0) {
+      this.description = descriptions[0];
+    }
+
+    const { data: features, error: featuresError } = await supabase.from("features").select("*");
+    if (features.length > 0) {
+      this.features = features;
+    }
   },
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .home_wrapper {
   background-color: var(--light);
   flex: 1;
@@ -182,6 +208,21 @@ export default {
           margin-bottom: 0.5rem;
         }
       }
+      &.feature-section-content {
+        i {
+          font-size: 1.25em;
+        }
+      }
+    }
+  }
+  .n-tabs-tab {
+    &.n-tabs-tab--active {
+      .n-tabs-tab__label {
+        color: var(--primary);
+      }
+    }
+    .n-tabs-tab__label {
+      color: var(--dark);
     }
   }
 }

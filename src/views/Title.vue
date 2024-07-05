@@ -59,11 +59,11 @@
               <p>AI Recommended Titles</p>
               <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
             </div>
-            <div class="title-list">
+            <n-button v-if="aiTitles.length < 1" @click="generateTitleRecommendations" class="generate-titles-bttn rounded-xl mt-4">Generate Recommendations</n-button>
+            <div class="title-list" v-else>
               <div class="title-item" v-for="title in aiTitles">
-                <p class="title-text">{{ title.title }}</p>
-                <n-icon class="makeCurrentTitle" @click="setCurrentTitle(title)"><StarEmphasis24Regular /></n-icon>
-                <n-icon class="addToFavorites" @click="addToFavorites(title)"><Star20Regular /></n-icon>
+                <p class="title-text">{{ title }}</p>
+                <n-icon class="addToFavorites" @click="submitNewTitle(title)"><Star20Regular /></n-icon>
                 <n-icon class="remove" @click="removeFromAISuggestions(title)"><PresenceBlocked12Regular /></n-icon>
               </div>
             </div>
@@ -78,6 +78,7 @@
 import { NInput, NButton, NIcon } from "naive-ui";
 import { StarEmphasis24Regular, StarEmphasis24Filled, Sparkle20Regular, Star20Filled, Star20Regular, PresenceBlocked12Regular } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
+import { getTitleRecommendations } from "@/services/openai.js";
 
 export default {
   components: {
@@ -102,9 +103,9 @@ export default {
   },
   computed: {},
   methods: {
-    async submitNewTitle() {
+    async submitNewTitle(aiTitle = null) {
       let newTitle = {
-        title: this.title,
+        title: aiTitle || this.title,
         is_current_title: false,
         is_favorite_title: false,
       };
@@ -170,6 +171,11 @@ export default {
       }
       const { data, error } = await supabase.from("titles").update({ is_current_title: currentTitle, is_favorite_title: favoriteTitle }).eq("id", title.id).select();
     },
+    async generateTitleRecommendations() {
+      let recommendations = await getTitleRecommendations(this.favoriteTitles, "App to help solo developers plan projects before development");
+      this.aiTitles = JSON.parse(recommendations);
+      console.log("AI Titles", this.aiTitles);
+    },
   },
   async mounted() {
     const { data: titles, error } = await supabase.from("titles").select("*");
@@ -232,6 +238,14 @@ export default {
     }
     .ideas-section {
       .idea-group {
+        .generate-titles-bttn {
+          background-color: var(--primary);
+          color: var(--light);
+          &:hover {
+            background-color: var(--light);
+            color: var(--primary);
+          }
+        }
         .title-list {
           margin-top: 12px;
           .title-item {

@@ -21,39 +21,36 @@
           </div>
           <n-button class="save-bttn rounded-lg text-lg" @click="saveDescriptions">Save</n-button>
         </div>
-        <div class="ai-description-details w-1/2 m-4 p-8">
+        <div class="ai-description-details flex flex-col items-center w-1/2 m-4 p-8">
           <h2 class="text-2xl font-bold text-center m-4 mb-8">AI Recommendations</h2>
-          <div class="description-group">
-            <div class="project-label mb-2">
-              <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
-              <p>Elevator Pitch</p>
-              <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
+          <n-button v-if="Object.keys(recommendedDescription).length < 1" class="generate-description-recommendations-bttn rounded-lg" @click="generateRecommendations">Generate Recommendations</n-button>
+          <div v-else>
+            <div class="description-group">
+              <div class="project-label mb-2">
+                <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
+                <p>Elevator Pitch</p>
+                <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
+              </div>
+              <div class="ai-recommendation">
+                <p>{{ recommendedDescription.elevator_pitch }}</p>
+              </div>
             </div>
-            <div class="ai-recommendation">
-              <p>caoreet. In est ante in nibh mauris. Pellentesque nec nam aliquam sem et tortor. Orci porta non pulvinar neque laoreet suspendisse. Feugiat vivamus at augue eget arcu dictum. Venenatis urna cursus eget nunc. Ut porttitor leo a diam sollicitudin tempor id eu</p>
+            <div class="description-group">
+              <div class="project-label mb-2">
+                <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
+                <p>Short Summary</p>
+                <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
+              </div>
+              <p>{{ recommendedDescription.short_summary }}</p>
             </div>
-          </div>
-          <div class="description-group">
-            <div class="project-label mb-2">
-              <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
-              <p>Short Summary</p>
-              <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
+            <div class="description-group">
+              <div class="project-label mb-2">
+                <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
+                <p>Extended Summary</p>
+                <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
+              </div>
+              <p>{{ recommendedDescription.extended_summary }}</p>
             </div>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tempor orci dapibus ultrices in iaculis nunc sed augue. Massa eget egestas purus viverra accumsan. Eu ultrices vitae auctor eu augue ut lectus arcu. Leo in vitae turpis massa. Viverra nam libero justo laoreet. In est ante in nibh mauris. Pellentesque nec nam aliquam sem et tortor. Orci porta non pulvinar neque laoreet suspendisse. Feugiat vivamus at augue eget arcu dictum. Venenatis urna cursus eget nunc. Ut porttitor leo a diam sollicitudin tempor id eu
-            </p>
-          </div>
-          <div class="description-group">
-            <div class="project-label mb-2">
-              <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
-              <p>Extended Summary</p>
-              <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
-            </div>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tempor orci dapibus ultrices in iaculis nunc sed augue. Massa eget egestas purus viverra accumsan. Eu ultrices vitae auctor eu augue ut lectus arcu. Leo in vitae turpis massa. Viverra nam libero justo laoreet. In est ante in nibh mauris. Pellentesque nec nam aliquam sem et tortor. Orci porta non pulvinar neque laoreet suspendisse. Feugiat vivamus at augue eget arcu dictum. Venenatis urna cursus eget nunc. Ut porttitor leo a diam sollicitudin tempor id eu
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tempor orci dapibus ultrices in iaculis nunc sed augue. Massa eget egestas purus viverra accumsan. Eu ultrices vitae auctor eu augue ut lectus arcu. Leo in vitae turpis massa. Viverra nam libero justo laoreet. In est ante in nibh mauris. Pellentesque nec nam aliquam sem et tortor. Orci porta non pulvinar neque laoreet suspendisse. Feugiat vivamus at augue eget arcu dictum. Venenatis urna cursus eget nunc. Ut porttitor leo a diam sollicitudin tempor id eu
-              nisl. Risus quis varius quam quisque id. Egestas purus viverra accumsan in nisl nisi scelerisque eu ultrices. Vulputate dignissim suspendisse in est. Quam lacus suspendisse faucibus interdum posuere lorem ipsum. A iaculis at erat pellentesque adipiscing commodo elit at. Vestibulum mattis ullamcorper velit sed. Ut morbi tincidunt augue interdum velit euismod. Risus nullam eget felis eget nunc lobortis mattis aliquam faucibus.
-            </p>
           </div>
         </div>
       </div>
@@ -61,10 +58,11 @@
   </main>
 </template>
 
-<script lang="ts">
+<script>
 import { NInput, NIcon, NButton } from "naive-ui";
 import { Sparkle20Regular } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
+import { getDescriptionRecommendations } from "@/services/openai.js";
 
 export default {
   components: {
@@ -76,16 +74,13 @@ export default {
   data() {
     return {
       description: {},
+      recommendedDescription: {},
       elevatorPitch: "",
       shortSummary: "",
       extendedSummary: "",
     };
   },
   methods: {
-    naiveuitest() {
-      //@ts-ignore
-      window.$message.success("naiveuitest");
-    },
     async saveDescriptions() {
       let updatedDescription = {
         elevator_pitch: this.elevatorPitch,
@@ -100,6 +95,11 @@ export default {
       }
       //@ts-ignore
       window.$message.success("Descriptions Saved!");
+    },
+    async generateRecommendations() {
+      let recommendations = await getDescriptionRecommendations(this.description, ["Plan App Title Ideas", "Project Templates", "Plan App Descriptions"]);
+      // this.recommendedDescription = JSON.parse(recommendations)[0];
+      console.log("Recommended Description: ", recommendations);
     },
   },
   async mounted() {
@@ -138,6 +138,16 @@ export default {
     .save-bttn {
       background-color: var(--primary);
       color: var(--light);
+      &:hover {
+        background-color: var(--tertiary);
+      }
+    }
+  }
+  .generate-description-recommendations-bttn {
+    background-color: var(--primary);
+    color: var(--light);
+    &:hover {
+      background-color: var(--tertiary);
     }
   }
 }
