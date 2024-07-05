@@ -63,7 +63,7 @@
             <div class="title-list" v-else>
               <div class="title-item" v-for="title in aiTitles">
                 <p class="title-text">{{ title }}</p>
-                <n-icon class="addToFavorites" @click="submitNewTitle(title)"><Star20Regular /></n-icon>
+                <n-icon class="addToFavorites" @click="submitNewAITitle(title)"><Star20Regular /></n-icon>
                 <n-icon class="remove" @click="removeFromAISuggestions(title)"><PresenceBlocked12Regular /></n-icon>
               </div>
             </div>
@@ -103,9 +103,26 @@ export default {
   },
   computed: {},
   methods: {
-    async submitNewTitle(aiTitle = null) {
+    async submitNewTitle() {
       let newTitle = {
-        title: aiTitle || this.title,
+        title: this.title,
+        is_current_title: false,
+        is_favorite_title: false,
+      };
+      const { data, error } = await supabase.from("titles").insert(newTitle).select();
+      if (data) {
+        //@ts-ignore
+        window.$message.success("New Title Added!");
+        this.pastTitles.unshift(data[0]);
+        this.title = "";
+      } else {
+        //@ts-ignore
+        window.$message.error("Error Adding New Title");
+      }
+    },
+    async submitNewAITitle(title) {
+      let newTitle = {
+        title: title,
         is_current_title: false,
         is_favorite_title: false,
       };
