@@ -4,7 +4,7 @@
       <!-- TITLE -->
       <div class="project-group">
         <div class="project-label">
-          <p>Login</p>
+          <p>Title</p>
           <n-icon>
             <TextEditStyle20Filled />
           </n-icon>

@@ -103,12 +103,7 @@ export default {
   data() {
     return {};
   },
-  methods: {
-    naiveuitest() {
-      //@ts-ignore
-      window.$message.success("naiveuitest");
-    },
-  },
+  methods: {},
 };
 </script>
 

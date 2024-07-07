@@ -79,6 +79,7 @@ import { NInput, NButton, NIcon } from "naive-ui";
 import { StarEmphasis24Regular, StarEmphasis24Filled, Sparkle20Regular, Star20Filled, Star20Regular, PresenceBlocked12Regular } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
 import { getTitleRecommendations } from "@/services/openai.js";
+import { projectStore } from "@/stores/projectStore";
 
 export default {
   components: {
@@ -108,8 +109,10 @@ export default {
         title: this.title,
         is_current_title: false,
         is_favorite_title: false,
+        project_id: this.store.getCurrentProject.id,
       };
       const { data, error } = await supabase.from("titles").insert(newTitle).select();
+      this.store.setTitles();
       if (data) {
         //@ts-ignore
         window.$message.success("New Title Added!");
@@ -125,8 +128,10 @@ export default {
         title: title,
         is_current_title: false,
         is_favorite_title: false,
+        project_id: this.store.getCurrentProject.id,
       };
       const { data, error } = await supabase.from("titles").insert(newTitle).select();
+      this.store.setTitles();
       if (data) {
         //@ts-ignore
         window.$message.success("New Title Added!");
@@ -165,6 +170,7 @@ export default {
     },
     async removeFromPastTitles(title: any) {
       const { error } = await supabase.from("titles").delete().eq("id", title.id);
+      this.store.setTitles();
       if (error) {
         //@ts-ignore
         window.$message.error("Error Removing Title");
@@ -184,31 +190,49 @@ export default {
       let currentTitle = is_current_title;
       let favoriteTitle = is_favorite_title;
       if ((is_current_title = true)) {
-        const { data: arrayData, error: arrayError } = await supabase.from("titles").update({ is_current_title: false }).select("*");
+        const { data: arrayData, error: arrayError } = await supabase.from("titles").update({ is_current_title: false }).eq("project_id", this.store.getCurrentProject.id).select("*");
+        const { data: projectData, error: projectError } = await supabase.from("projects").update({ title: this.currentTitle.title }).eq("id", this.store.getCurrentProject.id).select("*");
+        this.store.setTitles();
       }
       const { data, error } = await supabase.from("titles").update({ is_current_title: currentTitle, is_favorite_title: favoriteTitle }).eq("id", title.id).select();
+      this.store.setTitles();
     },
     async generateTitleRecommendations() {
       let recommendations = await getTitleRecommendations(this.favoriteTitles, "App to help solo developers plan projects before development");
       this.aiTitles = JSON.parse(recommendations);
       console.log("AI Titles", this.aiTitles);
     },
+    getTitles() {
+      let titles = this.store.getTitles;
+      this.currentTitle = { title: "" };
+      this.favoriteTitles = [];
+      this.pastTitles = [];
+      if (titles.length > 0) {
+        titles.forEach((title) => {
+          if (title.is_current_title) {
+            this.currentTitle = title;
+          }
+          if (title.is_favorite_title) {
+            this.favoriteTitles.push(title);
+          } else {
+            this.pastTitles.push(title);
+          }
+        });
+      }
+    },
   },
-  async mounted() {
-    const { data: titles, error } = await supabase.from("titles").select("*");
-    titles.forEach((title) => {
-      if (title.is_current_title) {
-        this.currentTitle = title;
-      }
-      if (title.is_favorite_title) {
-        this.favoriteTitles.push(title);
-      } else {
-        this.pastTitles.push(title);
-      }
-      if (this.currentTitle.title == "") {
-        this.currentTitle = this.favoriteTitles[0] || this.pastTitles[0] || this.aiTitles[0];
-      }
-    });
+  watch: {
+    store: {
+      async handler() {
+        this.getTitles();
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
+  setup() {
+    const store = projectStore();
+    return { store };
   },
 };
 </script>

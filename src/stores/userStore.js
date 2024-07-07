@@ -5,6 +5,7 @@ export const userStore = defineStore("userStore", {
   state: () => ({
     session: null,
     userData: null,
+    currentProject: null,
   }),
   actions: {
     setSession(session) {
@@ -30,6 +31,9 @@ export const userStore = defineStore("userStore", {
       this.session = null;
       this.userData = null;
     },
+    async setCurrentProject(project) {
+      this.currentProject = project;
+    },
   },
   getters: {
     getSession() {
@@ -37,6 +41,9 @@ export const userStore = defineStore("userStore", {
     },
     getUserData() {
       return this.userData;
+    },
+    getCurrentProject() {
+      return this.currentProject;
     },
   },
 });

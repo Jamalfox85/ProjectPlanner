@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { supabase } from "@/lib/supabaseClient";
-import { userStore } from "@/stores/userStore";
 import Home from "../views/Home.vue";
 import Title from "../views/Title.vue";
 import Description from "../views/Description.vue";
@@ -8,7 +6,7 @@ import Features from "../views/Features.vue";
 import Tables from "../views/Tables.vue";
 import Branding from "../views/Branding.vue";
 import Sitemap from "../views/Sitemap.vue";
-import Login from "../views/Login.vue";
+import Swot from "../views/Swot.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,9 +47,9 @@ const router = createRouter({
       component: Sitemap,
     },
     {
-      path: "/login",
-      name: "login",
-      component: Login,
+      path: "/swot",
+      name: "swot",
+      component: Swot,
     },
   ],
 });

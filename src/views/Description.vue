@@ -1,6 +1,9 @@
 <template>
   <main>
     <div class="description_wrapper">
+      <div class="project-label">
+        <p>{{ store.currentProject.title }}</p>
+      </div>
       <div class="description-header">
         <h1>Description</h1>
       </div>
@@ -63,6 +66,7 @@ import { NInput, NIcon, NButton } from "naive-ui";
 import { Sparkle20Regular } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
 import { getDescriptionRecommendations } from "@/services/openai.js";
+import { projectStore } from "@/stores/projectStore";
 
 export default {
   components: {
@@ -82,12 +86,15 @@ export default {
   },
   methods: {
     async saveDescriptions() {
+      let projectId = this.store.getCurrentProject.id;
       let updatedDescription = {
         elevator_pitch: this.elevatorPitch,
         short_summary: this.shortSummary,
         extended_summary: this.extendedSummary,
+        project_id: projectId,
       };
-      const { data, error } = await supabase.from("descriptions").update(updatedDescription).eq("id", this.description.id).select("*");
+      const { data, error } = await supabase.from("descriptions").upsert(updatedDescription).eq("project_id", projectId).select("*");
+      this.store.setDescriptions(data[0]);
       if (error) {
         //@ts-ignore
         window.$message.error("Error saving descriptions");
@@ -97,17 +104,39 @@ export default {
       window.$message.success("Descriptions Saved!");
     },
     async generateRecommendations() {
-      let recommendations = await getDescriptionRecommendations(this.description, ["Plan App Title Ideas", "Project Templates", "Plan App Descriptions"]);
-      // this.recommendedDescription = JSON.parse(recommendations)[0];
-      console.log("Recommended Description: ", recommendations);
+      let response = await getDescriptionRecommendations(this.description, ["Plan App Title Ideas", "Project Templates", "Plan App Descriptions"]);
+      const jsonResponse = response.replace(/^Recommended Description:\s*/, "");
+      const descriptionObject = JSON.parse(jsonResponse);
+      this.recommendedDescription = descriptionObject;
+    },
+    getDescriptions() {
+      let description = this.store.getDescriptions;
+      if (description.short_summary) {
+        this.description = description;
+        this.elevatorPitch = description.elevator_pitch;
+        this.shortSummary = description.short_summary;
+        this.extendedSummary = description.extended_summary;
+      } else {
+        this.description = {};
+        this.elevatorPitch = "";
+        this.shortSummary = "";
+        this.extendedSummary = "";
+      }
     },
   },
-  async mounted() {
-    let { data: descriptions, error } = await supabase.from("descriptions").select("*");
-    this.description = descriptions[0];
-    this.elevatorPitch = descriptions[0].elevator_pitch;
-    this.shortSummary = descriptions[0].short_summary;
-    this.extendedSummary = descriptions[0].extended_summary;
+
+  watch: {
+    store: {
+      async handler() {
+        this.getDescriptions();
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
+  setup() {
+    const store = projectStore();
+    return { store };
   },
 };
 </script>

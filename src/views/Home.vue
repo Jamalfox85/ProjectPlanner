@@ -1,23 +1,28 @@
 <template>
   <main>
     <div class="home_wrapper">
-      <!-- TITLE -->
-      <div class="project-group">
-        <div class="project-label" @click="this.$router.push('/title')">
-          <p>Title</p>
-          <n-icon>
-            <TextEditStyle20Filled />
-          </n-icon>
-        </div>
-        <div class="project-section-content">
-          <h1 class="primary-project-title">{{ this.title.title || "Home" }}</h1>
+      <div class="flex">
+        <!-- TITLE -->
+        <div class="project-group mr-auto">
+          <div class="project-label" @click="navigatePage('/title')">
+            <p>Title</p>
+            <n-icon>
+              <TextEditStyle20Filled />
+            </n-icon>
+          </div>
+          <div class="project-section-content flex items-center">
+            <h1 class="primary-project-title">{{ this.quickMode ? this.quickModeTitle : this.title?.title || "Home" }}</h1>
+            <n-icon class="cursor-pointer" v-if="quickMode && this.quickModeTitle" @click="changeQuickModeTitle">
+              <Refresh />
+            </n-icon>
+          </div>
         </div>
       </div>
       <div class="flex justify-center">
         <div class="flex flex-col w-3/4">
           <!-- DESCRIPTION -->
           <div class="project-group">
-            <div class="project-label" @click="this.$router.push('/description')">
+            <div class="project-label" @click="navigatePage('/description')">
               <p>Description</p>
               <n-icon>
                 <TextEditStyle20Filled />
@@ -40,7 +45,7 @@
           <div class="flex">
             <!-- BRANDING -->
             <div class="project-group w-1/2">
-              <div class="project-label" @click="this.$router.push('/branding')">
+              <div class="project-label" @click="navigatePage('/branding')">
                 <p>Branding</p>
                 <n-icon>
                   <TextEditStyle20Filled />
@@ -58,7 +63,7 @@
             </div>
             <!-- Pages -->
             <div class="project-group w-1/2">
-              <div class="project-label" @click="this.$router.push('/sitemap')">
+              <div class="project-label" @click="navigatePage('/sitemap')">
                 <p>Site Map</p>
                 <n-icon>
                   <TextEditStyle20Filled />
@@ -73,7 +78,7 @@
         <div class="flex flex-col w-1/4">
           <!-- FEATURES -->
           <div class="project-group">
-            <div class="project-label" @click="this.$router.push('/features')">
+            <div class="project-label" @click="navigatePage('/features')">
               <p>Features</p>
               <n-icon>
                 <TextEditStyle20Filled />
@@ -93,7 +98,7 @@
       </div>
       <!-- Tables -->
       <div class="project-group">
-        <div class="project-label" @click="this.$router.push('/tables')">
+        <div class="project-label" @click="navigatePage('/tables')">
           <p>Tables</p>
           <n-icon>
             <TextEditStyle20Filled />
@@ -109,8 +114,11 @@
 
 <script>
 import { TextEditStyle20Filled } from "@vicons/fluent";
-import { NIcon, NTabs, NTabPane, NCollapse, NCollapseItem } from "naive-ui";
+import { Refresh } from "@vicons/tabler";
+import { NIcon, NTabs, NTabPane, NCollapse, NCollapseItem, NSelect } from "naive-ui";
 import { supabase } from "@/lib/supabaseClient";
+import { projectStore } from "@/stores/projectStore";
+import { useEventBus } from "@vueuse/core";
 
 export default {
   components: {
@@ -119,36 +127,99 @@ export default {
     NTabPane,
     NCollapse,
     NCollapseItem,
+    NSelect,
     TextEditStyle20Filled,
+    Refresh,
   },
   data() {
     return {
+      quickMode: false,
       title: {},
+      quickModeTitle: "",
+      quickModeTitles: [],
+      projects: [],
+      currentProject: null,
       description: {},
       features: [],
+      loginModalBus: useEventBus("loginModalBus"),
     };
   },
   methods: {
-    naiveuitest() {
-      //@ts-ignore
-      window.$message.success("naiveuitest");
+    navigatePage(route) {
+      if (this.quickMode) {
+        this.loginModalBus.emit(true);
+        return;
+      }
+      this.$router.push(route);
+    },
+    async setNewTitle() {
+      let titles = await this.store.getTitles;
+      if (titles.length > 0) {
+        this.title = titles.find((title) => title.is_current_title);
+      } else {
+        this.title = { title: "Home" };
+      }
+    },
+    async setNewDescription() {
+      let descriptions = await this.store.getDescriptions;
+      this.description = descriptions;
+    },
+    async setFeatures() {
+      let features = await this.store.getFeatures;
+      this.features = features;
+    },
+    changeQuickModeTitle() {
+      this.quickModeTitle = this.quickModeTitles[Math.floor(Math.random() * this.quickModeTitles.length)];
     },
   },
   async mounted() {
-    const { data: titles, error } = await supabase.from("titles").select("*").eq("is_current_title", true);
-    if (titles.length > 0) {
-      this.title = titles[0];
+    const { data: projects, error: projectsError } = await supabase.from("projects").select("*");
+    if (projects.length > 0) {
+      this.projects = projects.map((project) => {
+        project.value = project.id;
+        project.label = project.title;
+        return project;
+      });
+      let currentProject = this.store.getCurrentProject;
+      if (currentProject && currentProject.id) {
+        this.currentProject = this.store.getCurrentProject.id;
+      }
     }
-
-    const { data: descriptions, error: descriptionError } = await supabase.from("descriptions").select("*");
-    if (descriptions.length > 0) {
-      this.description = descriptions[0];
-    }
-
-    const { data: features, error: featuresError } = await supabase.from("features").select("*");
-    if (features.length > 0) {
-      this.features = features;
-    }
+  },
+  watch: {
+    currentProject: {
+      async handler(newProject, oldProject) {
+        if (oldProject) {
+          let newProjectObject = this.projects.find((project) => project?.id === newProject);
+          this.store.setCurrentProject(newProjectObject);
+        }
+      },
+    },
+    store: {
+      async handler() {
+        let quickMode = this.store.getQuickMode;
+        if (quickMode) {
+          this.quickMode = true;
+          let quickData = this.store.getQuickModeDetails;
+          if (quickData && quickData.titles.length > 0 && quickData.features.length > 0) {
+            this.quickModeTitles = quickData.titles;
+            this.quickModeTitle = quickData.titles[0];
+            this.description = quickData.descriptions;
+            this.features = quickData.features;
+          }
+          return;
+        }
+        this.setNewTitle();
+        this.setNewDescription();
+        this.setFeatures();
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
+  setup() {
+    const store = projectStore();
+    return { store };
   },
 };
 </script>

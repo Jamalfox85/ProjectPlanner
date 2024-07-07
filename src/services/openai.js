@@ -26,8 +26,8 @@ async function getDescriptionRecommendations(description = {}, currentFeatures =
     messages: [
       { role: "system", content: "You are an experienced tech entrepreneur giving feedback to aspiring entrepreneurs." },
       { role: "system", content: "You are tasked with improving the user's current app description, keeping in mind their current features." },
-      { role: "system", content: "You should generate 3 descriptions of varying length (an elevator pitch, a short summary of 3-4 sentences, and an extended summary of 2 paragraphs) and return your response in the following format: {elevator_pitch: description, short_summary: description, extended_summary: description}. This object shoudl be the only thing returned in json format." },
-      { role: "system", content: `Consider the given descriptions: Elevator Pitch - ${description.elevator_pitch}, Short Summary - ${description.short_summary}, and Extended Summary - ${description.extended_summary}. Provide enhanced alternatives for each.` },
+      { role: "system", content: "You should generate 3 descriptions of varying length (an elevator pitch, a short summary of 1 paragraph, and an extended summary of 3 paragraphs)." },
+      { role: "system", content: 'Return your response as a JSON object with the following format: {"elevator_pitch": "description", "short_summary": "description", "extended_summary": "description"}. This object should be the only thing returned in JSON format, without any additional text or formatting.' },
       { role: "user", content: `My elevator pitch app description is: ${description.elevator_pitch}. My short summary app description is: ${description.short_summary}. My extended summary app description is: ${description.extended_summary}. I plan on building the features: ${currentFeatures.join(", ")}. Can you enhance my descriptions?` },
     ],
     model: "gpt-3.5-turbo",

@@ -1,6 +1,9 @@
 <template>
   <main>
     <div class="features_wrapper">
+      <div class="project-label">
+        <p>{{ store.currentProject.title }}</p>
+      </div>
       <div class="features-header flex items-center justify-between">
         <h1>Features</h1>
         <n-icon class="mx-2 addFeature cursor-pointer" @click="showAddFeatureDrawer = true"><AddCircle16Regular /></n-icon>
@@ -70,11 +73,12 @@
   </main>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import { NIcon, NDrawer, NDrawerContent, NInput, NButton } from "naive-ui";
 import { Sparkle20Regular, StarEmphasis24Filled, Star20Regular, AddCircle16Regular, Delete16Regular } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
 import { getFeatureRecommendations } from "@/services/openai.js";
+import { projectStore } from "@/stores/projectStore";
 
 export default {
   components: {
@@ -102,24 +106,24 @@ export default {
   methods: {
     async addToMVPFeatures(feature) {
       const { data, error } = await supabase.from("features").update({ is_mvp: true }).eq("id", feature.id).select();
+      this.store.setFeatures();
       if (error) {
         //@ts-ignore
         window.$message.error("Error Adding Feature to MVP Features");
         return;
       }
-      this.mvpFeatures.unshift(feature);
       this.longTermFeatures = this.longTermFeatures.filter((f) => f !== feature);
       //@ts-ignore
       window.$message.success("Feature Added to MVP Features");
     },
     async removeFromMVPFeatures(feature) {
       const { data, error } = await supabase.from("features").update({ is_mvp: false }).eq("id", feature.id).select();
+      this.store.setFeatures();
       if (error) {
         //@ts-ignore
         window.$message.error("Error Removing Feature from MVP Features");
         return;
       }
-      this.longTermFeatures.unshift(feature);
       this.mvpFeatures = this.mvpFeatures.filter((f) => f !== feature);
       //@ts-ignore
       window.$message.warning("Feature Removed from MVP Features");
@@ -129,17 +133,15 @@ export default {
         title: this.featureTitle,
         description: this.featureDescription,
         is_mvp: false,
+        project_id: this.store.getCurrentProject.id,
       };
       const { data, error } = await supabase.from("features").insert(newFeature).select();
+      this.store.setFeatures();
       if (error) {
         //@ts-ignore
         window.$message.error("Error Adding New Feature");
         return;
       }
-      this.longTermFeatures.unshift({
-        title: this.featureTitle,
-        description: this.featureDescription,
-      });
       this.featureTitle = "";
       this.featureDescription = "";
       this.showAddFeatureDrawer = false;
@@ -151,20 +153,22 @@ export default {
         title: feature.title,
         description: feature.description,
         is_mvp: false,
+        project_id: this.store.getCurrentProject.id,
       };
       const { data, error } = await supabase.from("features").insert(newFeature).select();
+      this.store.setFeatures();
       if (error) {
         //@ts-ignore
         window.$message.error("Error Adding Recommended Feature");
         return;
       }
-      this.longTermFeatures.unshift(data[0]);
       this.recommendedFeatures = this.recommendedFeatures.filter((f) => f !== feature);
       //@ts-ignore
       window.$message.success("Feature Added to Recommended Features");
     },
     async removeFeature(feature) {
       const { error } = await supabase.from("features").delete().eq("id", feature.id);
+      this.store.setFeatures();
       if (error) {
         //@ts-ignore
         window.$message.error("Error Removing Feature");
@@ -178,16 +182,46 @@ export default {
       let recommendations = await getFeatureRecommendations([...this.mvpFeatures, ...this.longTermFeatures], "App to help solo developers plan projects before development");
       this.recommendedFeatures = JSON.parse(recommendations);
     },
-  },
-  async mounted() {
-    const { data: features, error } = await supabase.from("features").select("*");
-    features.forEach((feature) => {
-      if (feature.is_mvp) {
-        this.mvpFeatures.push(feature);
+    getFeatures() {
+      let features = this.store.getFeatures;
+      if (features.length > 0) {
+        this.mvpFeatures = [];
+        this.longTermFeatures = [];
+        features.forEach((feature) => {
+          if (feature.is_mvp) {
+            this.mvpFeatures.push(feature);
+          } else {
+            this.longTermFeatures.push(feature);
+          }
+        });
       } else {
-        this.longTermFeatures.push(feature);
+        this.mvpFeatures = [];
+        this.longTermFeatures = [];
       }
-    });
+    },
+  },
+  // async mounted() {
+  //   const { data: features, error } = await supabase.from("features").select("*");
+  //   features.forEach((feature) => {
+  //     if (feature.is_mvp) {
+  //       this.mvpFeatures.push(feature);
+  //     } else {
+  //       this.longTermFeatures.push(feature);
+  //     }
+  //   });
+  // },
+  watch: {
+    store: {
+      async handler() {
+        this.getFeatures();
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
+  setup() {
+    const store = projectStore();
+    return { store };
   },
 };
 </script>
@@ -198,6 +232,15 @@ export default {
   padding: 2em;
   background-color: var(--primary);
   color: var(--light);
+  .project-label {
+    background-color: var(--light);
+    color: var(--primary);
+    width: fit-content;
+    padding: 4px 12px;
+    border-radius: 1em;
+    display: flex;
+    align-items: center;
+  }
   .features-header {
     font-size: 4em;
     font-weight: bold;
