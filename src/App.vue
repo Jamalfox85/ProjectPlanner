@@ -67,7 +67,7 @@ export default {
   components: { TheSidepanel, RouterLink, RouterView, NModal, NCard, NInput, NButton },
   data() {
     return {
-      showModal: true,
+      showModal: false,
       forceLoginMode: false,
       quickAppDescription: "",
       signUpMode: false,
@@ -172,13 +172,14 @@ export default {
 
     this.setLoadInProject();
 
-    let session = await supabase.auth.getSession();
-    console.log(session);
-    // if (session) {
-    //   this.setLoadInProject();
-    // } else {
-    //   this.showModal = true;
-    // }
+    let sessionData = await supabase.auth.getSession();
+    console.log(sessionData);
+    if (sessionData.data.session != null) {
+      this.setLoadInProject();
+      this.showModal = false;
+    } else {
+      this.showModal = true;
+    }
   },
   watch: {
     store: {
