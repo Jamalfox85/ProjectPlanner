@@ -30,9 +30,9 @@ export const projectStore = defineStore("projectStore", {
       this.quickModeDetails.titles = JSON.parse(titles);
 
       let features = await getFeatureRecommendations([], description);
-      let splitResponse = features.split("Features");
+      let splitResponse = features.split("Features")[0];
       console.log("Quick mode features", splitResponse);
-      let formattedFeatures = JSON.parse(splitResponse[0] || splitResponse);
+      let formattedFeatures = JSON.parse(splitResponse);
       this.quickModeDetails.features = formattedFeatures;
 
       let aiFormattedFeatures = formattedFeatures.map((feature) => {
@@ -44,7 +44,7 @@ export const projectStore = defineStore("projectStore", {
       const descriptionObject = JSON.parse(jsonResponse);
 
       this.quickModeDetails.descriptions.elevator_pitch = descriptionObject.elevator_pitch;
-      this.quickModeDetails.descriptions.short_summary = description;
+      this.quickModeDetails.descriptions.short_summary = descriptionObject.short_summary;
       this.quickModeDetails.descriptions.extended_summary = descriptionObject.extended_summary;
 
       console.log("Quick Mode Data", this.quickModeDetails);

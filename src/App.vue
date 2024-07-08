@@ -13,6 +13,7 @@
             <p class="mb-2">Enter a basic description of your app and we'll try to help you out</p>
             <n-input type="textarea" v-model:value="quickAppDescription" placeholder="Enter a description of your app" />
             <n-button @click="startQuickVersion" class="lets-get-started-bttn">Lets Get Started</n-button>
+            <n-spin class="m-8" v-if="quickModeLoading" />
           </div>
           <div class="returning-user-col flex grow flex-col items-center p-2">
             <h2 class="text-center text-lg font-bold mb-2">Plan On Staying A While?</h2>
@@ -64,16 +65,17 @@ import TheHeader from "./components/TheHeader.vue";
 import TheSidepanel from "./components/TheSidepanel.vue";
 import { supabase } from "@/lib/supabaseClient";
 import { projectStore } from "@/stores/projectStore";
-import { NModal, NCard, NInput, NButton } from "naive-ui";
+import { NModal, NCard, NInput, NButton, NSpin } from "naive-ui";
 import { useEventBus } from "@vueuse/core";
 
 export default {
-  components: { TheHeader, TheSidepanel, RouterLink, RouterView, NModal, NCard, NInput, NButton },
+  components: { TheHeader, TheSidepanel, RouterLink, RouterView, NModal, NCard, NInput, NButton, NSpin },
   data() {
     return {
       showModal: false,
       forceLoginMode: false,
       quickAppDescription: "",
+      quickModeLoading: false,
       signUpMode: false,
       email: "",
       password: "",
@@ -97,7 +99,7 @@ export default {
   },
   methods: {
     startQuickVersion() {
-      // this.showModal = false;
+      this.quickModeLoading = true;
       this.store.setQuickMode(true);
       this.store.setQuickModeDetails(this.quickAppDescription);
     },
@@ -152,6 +154,7 @@ export default {
           .select();
 
         this.setLoadInProject();
+        this.quickModeLoading = false;
         this.showModal = false;
       }
     },

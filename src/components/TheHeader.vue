@@ -21,7 +21,7 @@
           </div>
         </div>
       </n-popover> -->
-      <n-button class="new-project-bttn rounded flex items-center" @click="showAddProjectDrawer = true">
+      <n-button class="new-project-bttn rounded flex items-center" @click="showAddProjectDrawer = true" v-if="!quickMode">
         <AddCircle20Filled class="w-4 mr-2" />
         New Project
       </n-button>
@@ -177,6 +177,7 @@ export default {
     store: {
       async handler() {
         this.currentProject = this.store.getCurrentProject;
+        this.quickMode = this.store.getQuickMode;
       },
       deep: true,
       immediate: true,

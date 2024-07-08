@@ -41,7 +41,7 @@ async function getFeatureRecommendations(currentFeatures = [], description = "")
     messages: [
       { role: "system", content: "You are an experienced tech entrepreneur giving feedback to aspiring entrepreneurs." },
       { role: "system", content: "You are tasked with providing features recommendations given an app description and other features the user currently has. " },
-      { role: "system", content: "You should generate 5 features and return your response in the following format: [{title: title, description: description}]. Only return this array." },
+      { role: "system", content: 'You should generate 5 features and return your response in the following format: [{"title": title, "description": description}]. Only return this array.' },
       { role: "system", content: `Consider the given description: ${description}, and the features the user already has : ${currentFeatures.join(", ")}. Provide more recommendations for features:` },
       { role: "user", content: `My app description is: ${description}. I plan on building the features: ${currentFeatures.join(", ")}. What are some more feature recommendations?` },
     ],
