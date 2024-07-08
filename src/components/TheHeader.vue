@@ -38,7 +38,7 @@
             <Person16Regular class="w-6 m-auto" />
           </div>
         </template>
-        <div>
+        <div v-if="!quickMode">
           <div class="p-2 cursor-pointer hover:bg-slate-200" @click="logOut(project)">
             <p>Log Out</p>
           </div>
