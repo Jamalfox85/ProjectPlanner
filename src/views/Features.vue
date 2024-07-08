@@ -176,7 +176,8 @@ export default {
       window.$message.warning("Feature Removed");
     },
     async generateRecommendations() {
-      let recommendations = await getFeatureRecommendations([...this.mvpFeatures, ...this.longTermFeatures], "App to help solo developers plan projects before development");
+      let description = this.store.getDescriptions;
+      let recommendations = await getFeatureRecommendations([...this.mvpFeatures, ...this.longTermFeatures], description.extended_summary.length > 0 ? description.extended_summary : description.short_summary);
       this.recommendedFeatures = JSON.parse(recommendations);
     },
     getFeatures() {
