@@ -1,9 +1,6 @@
 <template>
   <main>
     <div class="features_wrapper">
-      <div class="project-label">
-        <p>{{ store.currentProject.title }}</p>
-      </div>
       <div class="features-header flex items-center justify-between">
         <h1>Features</h1>
         <n-icon class="mx-2 addFeature cursor-pointer" @click="showAddFeatureDrawer = true"><AddCircle16Regular /></n-icon>
@@ -230,11 +227,11 @@ export default {
 .features_wrapper {
   height: 100%;
   padding: 2em;
-  background-color: var(--primary);
-  color: var(--light);
+  // background-color: var(--primary);
+  // color: var(--light);
   .project-label {
-    background-color: var(--light);
-    color: var(--primary);
+    background-color: var(--dark);
+    color: var(--light);
     width: fit-content;
     padding: 4px 12px;
     border-radius: 1em;
@@ -242,7 +239,7 @@ export default {
     align-items: center;
   }
   .features-header {
-    font-size: 4em;
+    font-size: 2em;
     font-weight: bold;
     i {
       &:hover {
@@ -255,14 +252,16 @@ export default {
       padding: 1em;
       display: flex;
       flex-direction: column;
+      border: solid 1px var(--lightgray);
+      border-radius: 8px;
       .generate-feature-recommendations-bttn {
-        background-color: var(--light);
-        color: var(--primary);
+        background-color: var(--primary);
+        color: var(--light);
         margin: 0 auto;
       }
       .feature-group {
-        background-color: var(--light);
-        color: var(--dark);
+        background-color: var(--primary);
+        color: var(--light);
         padding: 1em;
         border-radius: 0.5em;
         margin-bottom: 1em;
