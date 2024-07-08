@@ -8,7 +8,7 @@
         <div class="flex items-center">
           <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon>
           <h1 class="current-title">{{ currentTitle.title }}</h1>
-          <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon>
+          <!-- <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon> -->
         </div>
       </div>
       <div class="main-content mt-8">
@@ -17,8 +17,8 @@
             <p>New Title Idea</p>
           </div>
           <div class="w-full flex items-center">
-            <n-input class="title-input rounded-full mr-2 text-xl p-2" placeholder="New Title Idea" v-model:value="title" @keypress.enter="submitNewTitle" />
-            <n-button class="rounded-full submit-bttn" @click="submitNewTitle">Submit</n-button>
+            <n-input class="title-input rounded-lg mr-2 text-xl p-2" placeholder="New Title Idea" v-model:value="title" @keypress.enter="submitNewTitle" />
+            <n-button class="rounded-lg submit-bttn" @click="submitNewTitle">Submit</n-button>
           </div>
         </div>
         <div class="ideas-section mt-8">
@@ -53,7 +53,7 @@
             </div>
           </div>
           <!-- AI TITLES -->
-          <div class="idea-group w-1/2">
+          <div class="idea-group">
             <div class="project-label">
               <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
               <p>AI Recommended Titles</p>
@@ -241,7 +241,6 @@ export default {
 .title_wrapper {
   padding: 2em;
   height: 100%;
-  background-color: var(--secondary);
   .project-label {
     background-color: var(--dark);
     color: var(--light);
@@ -255,7 +254,7 @@ export default {
     color: var(--primary);
   }
   .current-title {
-    font-size: 4em;
+    font-size: 2em;
     font-weight: bold;
   }
   .main-content {
@@ -279,6 +278,10 @@ export default {
     }
     .ideas-section {
       .idea-group {
+        border: solid 1px var(--lightgray);
+        border-radius: 8px;
+        padding: 1em;
+        margin: 1em;
         .generate-titles-bttn {
           background-color: var(--primary);
           color: var(--light);
