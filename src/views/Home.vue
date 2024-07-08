@@ -1,7 +1,7 @@
 <template>
   <main>
     <div class="home_wrapper">
-      <div class="flex">
+      <div class="flex header-group">
         <!-- TITLE -->
         <div class="project-group mr-auto">
           <div class="project-label" @click="navigatePage('/title')">
@@ -19,9 +19,9 @@
         </div>
       </div>
       <div class="flex justify-center">
-        <div class="flex flex-col w-3/4">
+        <div class="flex flex-col w-3/4 main-col-1">
           <!-- DESCRIPTION -->
-          <div class="project-group">
+          <div class="project-group description-group">
             <div class="project-label" @click="navigatePage('/description')">
               <p>Description</p>
               <n-icon>
@@ -42,7 +42,7 @@
               </n-tabs>
             </div>
           </div>
-          <div class="flex">
+          <div class="flex hidden">
             <!-- BRANDING -->
             <div class="project-group w-1/2">
               <div class="project-label" @click="navigatePage('/branding')">
@@ -75,7 +75,7 @@
             </div>
           </div>
         </div>
-        <div class="flex flex-col w-1/4">
+        <div class="flex flex-col w-1/4 main-col-2">
           <!-- FEATURES -->
           <div class="project-group">
             <div class="project-label" @click="navigatePage('/features')">
@@ -87,8 +87,9 @@
             <div class="project-section-content feature-section-content">
               <ul class="project-features">
                 <n-collapse>
-                  <n-collapse-item v-for="feature in features" :title="feature.title" :name="feature.id">
-                    <div>{{ feature.description }}</div>
+                  <n-collapse-item v-for="feature in features" :title="feature.title" :name="feature.id" class="feature-item">
+                    <div v-if="feature.description">{{ feature.description }}</div>
+                    <div v-else><p class="text-gray-500 text-xs">No Description Added</p></div>
                   </n-collapse-item>
                 </n-collapse>
               </ul>
@@ -97,7 +98,7 @@
         </div>
       </div>
       <!-- Tables -->
-      <div class="project-group">
+      <div class="project-group hidden">
         <div class="project-label" @click="navigatePage('/tables')">
           <p>Tables</p>
           <n-icon>
@@ -229,10 +230,25 @@ export default {
   background-color: var(--light);
   flex: 1;
   height: 100%;
-  padding: 2em;
-  .project-group {
-    margin-bottom: 24px;
+  padding: 1em;
+  .header-group {
+    background-color: var(--primary);
+    color: var(--light);
+    border-radius: 8px;
     padding: 1em;
+    margin-bottom: 2em;
+    .project-group {
+      margin-bottom: 0;
+      .project-label {
+        background-color: var(--light);
+        color: var(--primary);
+      }
+    }
+  }
+  .project-group {
+    margin-bottom: 2em;
+    margin-right: 2em;
+    // padding: 1em;
     .project-label {
       background-color: var(--primary);
       color: var(--light);
@@ -256,8 +272,8 @@ export default {
         font-size: 2em;
       }
       .primary-project-title {
-        color: var(--dark);
-        font-size: 4em;
+        color: var(--light);
+        font-size: 2em;
         font-weight: bold;
         margin-right: 12px;
       }
@@ -280,9 +296,26 @@ export default {
         }
       }
       &.feature-section-content {
+        border: solid 1px var(--lightgray);
+        padding: 1em;
+        width: 100%;
         i {
           font-size: 1.25em;
         }
+        .n-collapse-item {
+          border: solid 1px var(--lightgray) !important;
+          padding: 8px !important;
+          border-radius: 8px;
+          .n-collapse-item__header {
+            padding: 0 !important;
+          }
+        }
+      }
+    }
+    &.description-group {
+      .project-section-content {
+        padding: 12px;
+        border-radius: 8px;
       }
     }
   }
@@ -296,5 +329,13 @@ export default {
       color: var(--dark);
     }
   }
+}
+
+.main-col-1 {
+  padding: 1em;
+}
+.main-col-2 {
+  padding: 1em;
+  border-left: solid 1px var(--lightgray);
 }
 </style>

@@ -1,9 +1,6 @@
 <template>
   <main>
     <div class="description_wrapper">
-      <div class="project-label">
-        <p>{{ store.currentProject.title }}</p>
-      </div>
       <div class="description-header">
         <h1>Description</h1>
       </div>
@@ -37,6 +34,11 @@
               <div class="ai-recommendation">
                 <p>{{ recommendedDescription.elevator_pitch }}</p>
               </div>
+              <div class="mt-2">
+                <n-button class="save-ai-description-bttn" @click="saveAIDescription('elevatorPitch', recommendedDescription.elevator_pitch)">
+                  <AddCircle20Filled class="w-6" />
+                </n-button>
+              </div>
             </div>
             <div class="description-group">
               <div class="project-label mb-2">
@@ -45,6 +47,11 @@
                 <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
               </div>
               <p>{{ recommendedDescription.short_summary }}</p>
+              <div class="mt-2">
+                <n-button class="save-ai-description-bttn" @click="saveAIDescription('shortSummary', recommendedDescription.short_summary)">
+                  <AddCircle20Filled class="w-6" />
+                </n-button>
+              </div>
             </div>
             <div class="description-group">
               <div class="project-label mb-2">
@@ -53,6 +60,11 @@
                 <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
               </div>
               <p>{{ recommendedDescription.extended_summary }}</p>
+              <div class="mt-2">
+                <n-button class="save-ai-description-bttn" @click="saveAIDescription('extendedSummary', recommendedDescription.extended_summary)">
+                  <AddCircle20Filled class="w-6" />
+                </n-button>
+              </div>
             </div>
           </div>
         </div>
@@ -63,7 +75,7 @@
 
 <script>
 import { NInput, NIcon, NButton } from "naive-ui";
-import { Sparkle20Regular } from "@vicons/fluent";
+import { Sparkle20Regular, AddCircle20Filled } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
 import { getDescriptionRecommendations } from "@/services/openai.js";
 import { projectStore } from "@/stores/projectStore";
@@ -74,6 +86,7 @@ export default {
     NIcon,
     NButton,
     Sparkle20Regular,
+    AddCircle20Filled,
   },
   data() {
     return {
@@ -123,6 +136,16 @@ export default {
         this.extendedSummary = "";
       }
     },
+    saveAIDescription(target, text) {
+      if (target == "elevatorPitch") {
+        this.elevatorPitch = text;
+      } else if (target == "shortSummary") {
+        this.shortSummary = text;
+      } else if (target == "extendedSummary") {
+        this.extendedSummary = text;
+      }
+      this.saveDescriptions();
+    },
   },
 
   watch: {
@@ -156,11 +179,16 @@ export default {
     align-items: center;
   }
   .description-header {
-    font-size: 4em;
+    font-size: 2em;
     font-weight: bold;
   }
   .description-main {
     display: flex;
+    .current-description-details,
+    .ai-description-details {
+      border: solid 1px var(--lightgray);
+      border-radius: 1em;
+    }
     .description-group {
       margin-bottom: 24px;
     }
@@ -171,12 +199,17 @@ export default {
         background-color: var(--tertiary);
       }
     }
+    .save-ai-description-bttn {
+      background-color: var(--primary);
+      color: var(--light);
+      border-radius: 8px;
+    }
   }
   .generate-description-recommendations-bttn {
     background-color: var(--primary);
     color: var(--light);
     &:hover {
-      background-color: var(--tertiary);
+      background-color: var(--primary);
     }
   }
 }

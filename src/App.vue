@@ -1,7 +1,10 @@
 <template>
   <div class="app_wrapper" :style="themeColors">
-    <TheSidepanel class="header" />
-    <RouterView class="main" />
+    <TheHeader />
+    <div class="flex grow">
+      <TheSidepanel class="sidepanel" />
+      <RouterView class="main" />
+    </div>
     <n-modal v-model:show="showModal" :mask-closable="forceLoginMode ? true : false">
       <n-card style="width: 90%" title="Welcome to Ceres!" :bordered="false" size="huge" role="dialog" aria-modal="true">
         <div class="flex">
@@ -57,6 +60,7 @@
 
 <script>
 import { RouterLink, RouterView } from "vue-router";
+import TheHeader from "./components/TheHeader.vue";
 import TheSidepanel from "./components/TheSidepanel.vue";
 import { supabase } from "@/lib/supabaseClient";
 import { projectStore } from "@/stores/projectStore";
@@ -64,7 +68,7 @@ import { NModal, NCard, NInput, NButton } from "naive-ui";
 import { useEventBus } from "@vueuse/core";
 
 export default {
-  components: { TheSidepanel, RouterLink, RouterView, NModal, NCard, NInput, NButton },
+  components: { TheHeader, TheSidepanel, RouterLink, RouterView, NModal, NCard, NInput, NButton },
   data() {
     return {
       showModal: false,
@@ -85,6 +89,7 @@ export default {
         "--primary": this.$colors.primary,
         "--secondary": this.$colors.secondary,
         "--tertiary": this.$colors.tertiary,
+        "--lightgray": this.$colors.lightgray,
         "--dark": this.$colors.dark,
         "--light": this.$colors.light,
       };
@@ -173,7 +178,6 @@ export default {
     this.setLoadInProject();
 
     let sessionData = await supabase.auth.getSession();
-    console.log(sessionData);
     if (sessionData.data.session != null) {
       this.setLoadInProject();
       this.showModal = false;
@@ -203,9 +207,10 @@ export default {
 .app_wrapper {
   min-height: 100vh;
   display: flex;
-  .header {
+  flex-direction: column;
+  .sidepanel {
     width: 200px;
-    background-color: var(--dark);
+    background-color: var(--light);
   }
   .main {
     flex: 1;

@@ -1,9 +1,6 @@
 <template>
   <main>
-    <div class="home_wrapper">
-      <h1 class="home">Home</h1>
-      <button @click="naiveuitest">Test</button>
-    </div>
+    <h1 class="text-3xl p-4">Coming Soon</h1>
   </main>
 </template>
 
@@ -21,8 +18,4 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-.home_wrapper {
-  background-color: var(--primary);
-}
-</style>
+<style scoped lang="scss"></style>
