@@ -17,6 +17,11 @@
             </n-icon>
           </div>
         </div>
+        <div class="project-actions ml-auto">
+          <n-button class="bg-white" @click="deleteProject">
+            <font-awesome-icon :icon="['fas', 'trash']" class="text-blue-500" />
+          </n-button>
+        </div>
       </div>
       <div class="flex justify-center">
         <div class="flex flex-col w-3/4 main-col-1">
@@ -116,7 +121,7 @@
 <script>
 import { TextEditStyle20Filled } from "@vicons/fluent";
 import { Refresh } from "@vicons/tabler";
-import { NIcon, NTabs, NTabPane, NCollapse, NCollapseItem, NSelect } from "naive-ui";
+import { NIcon, NTabs, NTabPane, NCollapse, NCollapseItem, NSelect, NButton } from "naive-ui";
 import { supabase } from "@/lib/supabaseClient";
 import { projectStore } from "@/stores/projectStore";
 import { useEventBus } from "@vueuse/core";
@@ -129,6 +134,7 @@ export default {
     NCollapse,
     NCollapseItem,
     NSelect,
+    NButton,
     TextEditStyle20Filled,
     Refresh,
   },
@@ -172,6 +178,14 @@ export default {
     changeQuickModeTitle() {
       this.quickModeTitle = this.quickModeTitles[Math.floor(Math.random() * this.quickModeTitles.length)];
     },
+    async deleteProject() {
+      const { error } = await supabase.from("projects").delete().eq("id", this.currentProject);
+      if (error) {
+        window.$message.error("An error occurred while deleting project");
+        return;
+      }
+      window.$message.success("Project deleted successfully");
+    },
   },
   async mounted() {
     const { data: projects, error: projectsError } = await supabase.from("projects").select("*");
@@ -213,6 +227,10 @@ export default {
         this.setNewTitle();
         this.setNewDescription();
         this.setFeatures();
+        let currentProjectId = this.store.getCurrentProject.id;
+        if (this.currentProject !== currentProjectId) {
+          this.currentProject = currentProjectId;
+        }
       },
       deep: true,
       immediate: true,

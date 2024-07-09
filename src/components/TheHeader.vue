@@ -21,10 +21,6 @@
           </div>
         </div>
       </n-popover> -->
-      <n-button class="new-project-bttn rounded flex items-center" @click="showAddProjectDrawer = true" v-if="!quickMode">
-        <AddCircle20Filled class="w-4 mr-2" />
-        New Project
-      </n-button>
     </div>
 
     <!-- PROFILE SIDE -->
@@ -45,19 +41,6 @@
         </div>
       </n-popover>
     </div>
-
-    <!-- ADD PROJECT DRAWER -->
-    <n-drawer v-model:show="showAddProjectDrawer" :width="502" :placement="'right'">
-      <n-drawer-content title="Add Project" class="add-project-drawer">
-        <div class="flex flex-col">
-          <div class="mb-4">
-            <label class="mb-2">Project Title</label>
-            <n-input v-model:value="newProjectTitle" placeholder="Project Title" class="w-1/2" />
-          </div>
-          <n-button class="rounded" @click="addNewProject">Create</n-button>
-        </div>
-      </n-drawer-content>
-    </n-drawer>
 
     <!-- HELP MODAL -->
     <n-modal v-model:show="showHelpModal">
@@ -114,8 +97,6 @@ export default {
       quickMode: false,
       currentProject: null,
       loginModalBus: useEventBus("loginModalBus"),
-      showAddProjectDrawer: false,
-      newProjectTitle: "",
       showHelpModal: false,
     };
   },
@@ -149,25 +130,7 @@ export default {
     setProject(project) {
       this.store.setCurrentProject(project);
     },
-    async addNewProject() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      const { data, error } = await supabase
-        .from("projects")
-        .insert([{ title: this.newProjectTitle, user_id: user.id }])
-        .select();
-
-      await supabase
-        .from("titles")
-        .insert([{ title: this.newProjectTitle, is_current_title: true, is_favorite_title: true, project_id: data[0].id }])
-        .select();
-
-      this.showAddProjectDrawer = false;
-    },
     logOut() {
-      console.log("log out");
       supabase.auth.signOut();
       this.loginModalBus.emit(true);
       this.store.clearProjects();
@@ -193,15 +156,5 @@ export default {
 .header_wrapper {
   border-bottom: solid 1px var(--lightgray);
   height: 60px;
-  .new-project-bttn {
-    background-color: var(--primary);
-    color: var(--light);
-  }
-}
-.add-project-drawer {
-  .n-button {
-    background-color: #0066ff;
-    color: #fff;
-  }
 }
 </style>

@@ -22,6 +22,10 @@
           </div>
         </n-popover>
       </div>
+      <n-button class="new-project-bttn rounded flex items-center" @click="showAddProjectDrawer = true" v-if="!quickMode">
+        <AddCircle20Filled class="w-4 mr-2" />
+        New Project
+      </n-button>
       <nav class="app-navigation p-4 self-center">
         <b class="text-xs">Planning</b>
         <div class="p-4 mb-6">
@@ -55,14 +59,27 @@
         </div>
       </nav>
     </div>
+
+    <!-- ADD PROJECT DRAWER -->
+    <n-drawer v-model:show="showAddProjectDrawer" :width="502" :placement="'right'">
+      <n-drawer-content title="Add Project" class="add-project-drawer">
+        <div class="flex flex-col">
+          <div class="mb-4">
+            <label class="mb-2">Project Title</label>
+            <n-input v-model:value="newProjectTitle" placeholder="Project Title" class="w-1/2" />
+          </div>
+          <n-button class="rounded" @click="addNewProject">Create</n-button>
+        </div>
+      </n-drawer-content>
+    </n-drawer>
   </header>
 </template>
 <script>
 import { RouterLink } from "vue-router";
-import { NSelect, NIcon, NButton, NPopover } from "naive-ui";
+import { NSelect, NIcon, NButton, NPopover, NDrawer, NDrawerContent, NInput } from "naive-ui";
 import { projectStore } from "@/stores/projectStore";
 import { useEventBus } from "@vueuse/core";
-import { LockClosed12Filled, Home32Filled } from "@vicons/fluent";
+import { LockClosed12Filled, Home32Filled, AddCircle20Filled } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
 
 export default {
@@ -72,8 +89,12 @@ export default {
     NIcon,
     NButton,
     NPopover,
+    NDrawer,
+    NDrawerContent,
+    NInput,
     LockClosed12Filled,
     Home32Filled,
+    AddCircle20Filled,
   },
   data() {
     return {
@@ -81,6 +102,8 @@ export default {
       currentProject: null,
       projects: [],
       loginModalBus: useEventBus("loginModalBus"),
+      showAddProjectDrawer: false,
+      newProjectTitle: "",
     };
   },
   computed: {
@@ -109,6 +132,23 @@ export default {
     },
     setProject(project) {
       this.store.setCurrentProject(project);
+    },
+    async addNewProject() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const { data, error } = await supabase
+        .from("projects")
+        .insert([{ title: this.newProjectTitle, user_id: user.id }])
+        .select();
+
+      await supabase
+        .from("titles")
+        .insert([{ title: this.newProjectTitle, is_current_title: true, is_favorite_title: true, project_id: data[0].id }])
+        .select();
+
+      this.showAddProjectDrawer = false;
     },
   },
   mounted() {},
@@ -151,6 +191,10 @@ export default {
     text-align: center;
     padding: 1rem;
   }
+  .new-project-bttn {
+    background-color: var(--primary);
+    color: var(--light);
+  }
   .app-navigation {
     display: flex;
     flex-direction: column;
@@ -184,6 +228,12 @@ export default {
         background-color: #0066ff20;
       }
     }
+  }
+}
+.add-project-drawer {
+  .n-button {
+    background-color: #0066ff;
+    color: #fff;
   }
 }
 </style>

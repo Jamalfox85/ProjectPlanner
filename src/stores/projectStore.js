@@ -19,6 +19,7 @@ export const projectStore = defineStore("projectStore", {
     titles: {},
     descriptions: {},
     features: [],
+    swotItems: [],
   }),
   actions: {
     setQuickMode(mode) {
@@ -55,6 +56,7 @@ export const projectStore = defineStore("projectStore", {
         this.setTitles();
         this.setDescriptions();
         this.setFeatures();
+        this.setSWOTItems();
       }
     },
     setUserProjects(projects) {
@@ -82,12 +84,21 @@ export const projectStore = defineStore("projectStore", {
       }
       this.features = [];
     },
+    async setSWOTItems() {
+      const { data: swotItems, error } = await supabase.from("swot_items").select("*").eq("project_id", this.currentProject.id).order("created_at", { ascending: false });
+      if (swotItems.length > 0) {
+        this.swotItems = swotItems;
+        return;
+      }
+      this.swotItems = [];
+    },
     clearProjects() {
       this.userProjects = [];
       this.currentProject = {};
       this.titles = {};
       this.descriptions = {};
       this.features = [];
+      this.swotItems = [];
       console.log("Projects cleared");
     },
   },
@@ -112,6 +123,9 @@ export const projectStore = defineStore("projectStore", {
     },
     getFeatures() {
       return this.features;
+    },
+    getSWOTItems() {
+      return this.swotItems;
     },
   },
 });
