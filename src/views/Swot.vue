@@ -11,7 +11,11 @@
             <!-- <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon> -->
           </div>
         </div>
-        <n-button class="ml-auto bg-blue-500 text-white rounded-lg" @click="showAddSWOTDrawer = true">
+        <n-button class="ml-auto bg-blue-500 text-white rounded-lg" @click="generateSwot">
+          <Sparkle20Filled class="w-4 mr-2" />
+          Generate Results
+        </n-button>
+        <n-button class="ml-4 bg-blue-500 text-white rounded-lg" @click="showAddSWOTDrawer = true">
           <AddCircle20Filled class="w-4 mr-2" />
           Add Item
         </n-button>
@@ -22,6 +26,7 @@
             <h2 class="text-lg font-bold">Strengths</h2>
             <div class="list-outer-container">
               <ul class="list-inner-container">
+                <li v-for="item in aiResponse.strengths" class="list-item-container bg-blue-500 text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }} <AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 1)" /></li>
                 <li v-for="item in strengths" class="list-item-container">{{ item.text }}</li>
               </ul>
             </div>
@@ -30,6 +35,7 @@
             <h2 class="text-lg font-bold">Weaknesses</h2>
             <div class="list-outer-container">
               <ul class="list-inner-container">
+                <li v-for="item in aiResponse.weaknesses" class="list-item-container bg-blue-500 text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }} <AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 2)" /></li>
                 <li v-for="item in weaknesses" class="list-item-container">{{ item.text }}</li>
               </ul>
             </div>
@@ -38,6 +44,7 @@
             <h2 class="text-lg font-bold">Opportunities</h2>
             <div class="list-outer-container">
               <ul class="list-inner-container">
+                <li v-for="item in aiResponse.opportunities" class="list-item-container bg-blue-500 text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }}<AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 3)" /></li>
                 <li v-for="item in opportunities" class="list-item-container">{{ item.text }}</li>
               </ul>
             </div>
@@ -46,41 +53,12 @@
             <h2 class="text-lg font-bold">Threats</h2>
             <div class="list-outer-container">
               <ul class="list-inner-container">
+                <li v-for="item in aiResponse.threats" class="list-item-container bg-blue-500 text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }}<AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 4)" /></li>
                 <li v-for="item in threats" class="list-item-container">{{ item.text }}</li>
               </ul>
             </div>
           </div>
         </div>
-        <!-- <div class="swot-recc-column w-1/3 border-2 rounded-xl p-4">
-          <h2 class="text-lg font-bold">Strengths</h2>
-          <ul class="mb-8 list-disc ml-4">
-            <li>AI Generated #1</li>
-            <li>AI Generated #2</li>
-            <li>AI Generated #3</li>
-            <li>AI Generated #4</li>
-          </ul>
-          <h2 class="text-lg font-bold">Weaknesses</h2>
-          <ul class="mb-8 list-disc ml-4">
-            <li>AI Generated #1</li>
-            <li>AI Generated #2</li>
-            <li>AI Generated #3</li>
-            <li>AI Generated #4</li>
-          </ul>
-          <h2 class="text-lg font-bold">Threats</h2>
-          <ul class="mb-8 list-disc ml-4">
-            <li>AI Generated #1</li>
-            <li>AI Generated #2</li>
-            <li>AI Generated #3</li>
-            <li>AI Generated #4</li>
-          </ul>
-          <h2 class="text-lg font-bold">Opportunity</h2>
-          <ul class="mb-8 list-disc ml-4">
-            <li>AI Generated #1</li>
-            <li>AI Generated #2</li>
-            <li>AI Generated #3</li>
-            <li>AI Generated #4</li>
-          </ul>
-        </div> -->
       </div>
     </div>
     <!-- ADD SWOT DRAWER -->
@@ -102,13 +80,16 @@
 </template>
 
 <script lang="js">
-import { TextEditStyle20Filled, AddCircle20Filled } from "@vicons/fluent";
+import { Sparkle20Filled, TextEditStyle20Filled, AddCircle20Filled } from "@vicons/fluent";
 import { NIcon, NDrawer, NDrawerContent, NSelect, NButton, NInput } from "naive-ui";
 import { projectStore } from "@/stores/projectStore";
 import { supabase } from "@/lib/supabaseClient";
+import { getSWOTAnalysis } from "@/services/openai";
+
 export default {
   components: {
     NIcon,
+    Sparkle20Filled,
     AddCircle20Filled,
     TextEditStyle20Filled,
     NDrawer,
@@ -123,6 +104,7 @@ export default {
       weaknesses: [],
       opportunities: [],
       threats: [],
+      aiResponse: {},
       showAddSWOTDrawer: false,
       newSWOTText: "",
       newSWOTType: 1,
@@ -139,10 +121,6 @@ export default {
     },
   },
   methods: {
-    naiveuitest() {
-      //@ts-ignore
-      window.$message.success("naiveuitest");
-    },
     loadSwotItems() {
       let swotItems = this.store.getSWOTItems;
       this.strengths = [];
@@ -172,6 +150,39 @@ export default {
       }
       window.$message.success("Item added successfully");
       this.showAddSWOTDrawer = false;
+    },
+    async generateSwot() {
+      let response = await getSWOTAnalysis(this.store.getDescriptions.short_summary);
+      const jsonResponse = JSON.parse(response.replace(/SWOT\s*/, '').trim());
+
+      this.aiResponse.strengths = jsonResponse.strengths
+      this.aiResponse.weaknesses = jsonResponse.weaknesses
+      this.aiResponse.opportunities = jsonResponse.opportunities
+      this.aiResponse.threats = jsonResponse.threats
+    },
+    async addAISwot(item, type) {
+      const { data, error } = await supabase
+        .from("swot_items")
+        .insert([{ text: item, swot_type_id: type, project_id: this.store.getCurrentProject.id }])
+        .select();
+      if (error) {
+        window.$message.error(error.message);
+        return;
+      }
+      if (type == 1) {
+        this.aiResponse.strengths = this.aiResponse.strengths.filter((i) => i !== item);
+        this.strengths.push({ text: item });
+      } else if (type == 2) {
+        this.aiResponse.weaknesses = this.aiResponse.weaknesses.filter((i) => i !== item);
+        this.weaknesses.push({ text: item });
+      } else if (type == 3) {
+        this.aiResponse.opportunities = this.aiResponse.opportunities.filter((i) => i !== item);
+        this.opportunities.push({ text: item });
+      } else if (type == 4) {
+        this.aiResponse.threats = this.aiResponse.threats.filter((i) => i !== item);
+        this.threats.push({ text: item });
+      }
+      window.$message.success("Item added successfully");
     },
   },
   watch: {

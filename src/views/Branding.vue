@@ -1,8 +1,12 @@
 <template>
   <main>
     <div class="branding_wrapper">
-      <div class="branding-header">
+      <div class="branding-header flex">
         <h1>Branding</h1>
+        <n-button class="ml-auto bg-blue-500 text-white rounded-lg" @click="generateAIPalette">
+          <Sparkle20Filled class="w-4 mr-2" />
+          Generate Results
+        </n-button>
       </div>
       <div class="branding-main">
         <div class="palette-group">
@@ -19,10 +23,22 @@
                 <font-awesome-icon class="m-auto" :icon="['fas', 'trash']" @click="deleteColor(index)" />
               </div>
             </div>
-            <div v-if="colors && colors.length < 5" class="color border-2 border-dashed border-gray-500 bg-slate-100 hover:bg-slate-200 cursor-pointer mr-2 w-20 h-20 rounded-full relative flex items-center justify-center empty-color">
+            <div v-if="colors.length < 5" class="color border-2 border-dashed border-gray-500 bg-slate-100 hover:bg-slate-200 cursor-pointer mr-2 w-20 h-20 rounded-full relative flex items-center justify-center empty-color">
               <div class="absolute m-auto w-8 h-8 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-lg add-color-block">
                 <font-awesome-icon :icon="['fas', 'square-plus']" />
                 <n-color-picker :modes="['hex']" class="color-picker" v-model:value="addNewColor" />
+              </div>
+            </div>
+          </div>
+          <div class="colors flex flex-col m-4" v-if="this.aiPalette.length > 0">
+            <div class="project-label">
+              <p>Recommended Palette</p>
+            </div>
+            <div class="flex">
+              <div v-for="(color, index) in this.aiPalette" class="mr-2 w-20 h-40 rounded-full relative flex flex-col items-center justify-center filled-out-color" :style="{ backgroundColor: color }">
+                <div class="bg-blue-500 text-white hover:bg-blue-600 relative w-8 h-8 rounded-lg trash-color-block flex cursor-pointer">
+                  <font-awesome-icon class="m-auto" :icon="['fas', 'square-plus']" @click="addRecommendedColor(color)" />
+                </div>
               </div>
             </div>
           </div>
@@ -34,23 +50,29 @@
 
 <script lang="ts">
 import { projectStore } from "@/stores/projectStore";
-import { NColorPicker } from "naive-ui";
+import { Sparkle20Filled } from "@vicons/fluent";
+import { NColorPicker, NButton } from "naive-ui";
 import { supabase } from "@/lib/supabaseClient";
+import { getColorPalette } from "@/services/openai";
+
 export default {
   components: {
+    Sparkle20Filled,
     NColorPicker,
+    NButton,
   },
   data() {
     return {
       colors: [],
       newColor: "",
       addNewColor: "",
+      aiPalette: [],
     };
   },
   methods: {
     setBrandingDetails() {
       let branding = this.store.getBranding;
-      this.colors = branding.colors;
+      this.colors = branding.colors || [];
     },
     async updatedColor(index) {
       this.colors[index] = this.newColor;
@@ -77,6 +99,18 @@ export default {
       const { data, error } = await supabase.from("color_palettes").update({ colors: this.colors }).eq("project_id", projectId).select();
       if (error) {
         console.error("Error deleting color from palette", error);
+      }
+    },
+    async generateAIPalette() {
+      let response = await getColorPalette(this.store.getDescriptions.short_summary);
+      this.aiPalette = JSON.parse(response);
+    },
+    async addRecommendedColor(color) {
+      this.colors.push(color);
+      let projectId = this.store.getCurrentProject.id;
+      const { data, error } = await supabase.from("color_palettes").update({ colors: this.colors }).eq("project_id", projectId).select();
+      if (error) {
+        console.error("Error adding color to palette", error);
       }
     },
   },

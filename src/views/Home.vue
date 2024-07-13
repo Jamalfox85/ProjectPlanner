@@ -221,6 +221,7 @@ export default {
             this.quickModeTitle = quickData.titles[0];
             this.description = quickData.descriptions;
             this.features = quickData.features;
+            this.swot = quickData.swot;
           }
           return;
         }

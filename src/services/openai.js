@@ -51,4 +51,33 @@ async function getFeatureRecommendations(currentFeatures = [], description = "")
   return response.choices[0].message.content;
 }
 
-export { getTitleRecommendations, getDescriptionRecommendations, getFeatureRecommendations };
+async function getSWOTAnalysis(description = "") {
+  const response = await openai.chat.completions.create({
+    messages: [
+      { role: "system", content: "You are an experienced tech entrepreneur giving feedback to aspiring entrepreneurs." },
+      { role: "system", content: "You are tasked with providing a swot analysis given an app description." },
+      { role: "system", content: 'You should generate an object with an array key for "strengths", "weaknesses", "opportunities", and "threats". Ideally 2-4 in each category. Only return this object.' },
+      { role: "system", content: `Consider the given description: ${description}. Provide a swot analysis:` },
+      { role: "user", content: `My app description is: ${description}. What is my swot analysis?` },
+    ],
+    model: "gpt-3.5-turbo",
+    temperature: 0.8,
+  });
+  return response.choices[0].message.content;
+}
+
+async function getColorPalette(description = "") {
+  const response = await openai.chat.completions.create({
+    messages: [
+      { role: "system", content: "You are an experienced tech entrepreneur giving feedback to aspiring entrepreneurs." },
+      { role: "system", content: "You are tasked with generating a color palette with 5 colors (hex) based on an app description." },
+      { role: "system", content: `Based on the description '${description}', return a color palette as an array of hex codes without any additional text.` },
+      { role: "user", content: `My app description is: ${description}. What is a potential color palette? Please return only the array of hex codes.` },
+    ],
+    model: "gpt-3.5-turbo",
+    temperature: 0.8,
+  });
+  return response.choices[0].message.content;
+}
+
+export { getTitleRecommendations, getDescriptionRecommendations, getFeatureRecommendations, getSWOTAnalysis, getColorPalette };

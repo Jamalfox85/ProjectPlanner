@@ -37,9 +37,9 @@
             </n-icon>
           </div>
         </div>
-        <b class="text-xs">Development</b>
+        <b class="text-xs">Design</b>
         <div class="p-4 mb-6">
-          <div class="link-group" v-for="link in navigationLinks.developmentLinks" :class="{ active: link.active }" @click="navigatePage(link.path)">
+          <div class="link-group" v-for="link in navigationLinks.designLinks" :class="{ active: link.active }" @click="navigatePage(link.path)">
             <font-awesome-icon :icon="link.icon" class="text-paletteGray mr-2" />
             <RouterLink :to="link.path">{{ link.name }}</RouterLink>
             <n-icon class="mx-2" v-if="quickMode && link.path !== '/'">
@@ -47,9 +47,9 @@
             </n-icon>
           </div>
         </div>
-        <b class="text-xs">Design</b>
+        <b class="text-xs">Development</b>
         <div class="p-4 mb-6">
-          <div class="link-group" v-for="link in navigationLinks.designLinks" :class="{ active: link.active }" @click="navigatePage(link.path)">
+          <div class="link-group" v-for="link in navigationLinks.developmentLinks" :class="{ active: link.active }" @click="navigatePage(link.path)">
             <font-awesome-icon :icon="link.icon" class="text-paletteGray mr-2" />
             <RouterLink :to="link.path">{{ link.name }}</RouterLink>
             <n-icon class="mx-2" v-if="quickMode && link.path !== '/'">
@@ -114,7 +114,7 @@ export default {
         { name: "Title", path: "/title", active: path === "/title", icon: ["fas", "bullseye"] },
         { name: "Description", path: "/description", active: path === "/description", icon: ["fas", "align-left"] },
         { name: "Features", path: "/features", active: path === "/features", icon: ["fas", "list-check"] },
-        { name: "Sitemap", path: "/sitemap", active: path === "/sitemap", icon: ["fas", "sitemap"] },
+        // { name: "Sitemap", path: "/sitemap", active: path === "/sitemap", icon: ["fas", "sitemap"] },
         { name: "SWOT", path: "/swot", active: path === "/swot", icon: ["fas", "shield-halved"] },
       ];
       let developmentLinks = [
