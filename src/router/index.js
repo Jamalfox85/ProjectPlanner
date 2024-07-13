@@ -3,6 +3,7 @@ import Home from "../views/Home.vue";
 import Title from "../views/Title.vue";
 import Description from "../views/Description.vue";
 import Features from "../views/Features.vue";
+import Tasks from "../views/Tasks.vue";
 import Tables from "../views/Tables.vue";
 import Branding from "../views/Branding.vue";
 import Sitemap from "../views/Sitemap.vue";
@@ -30,6 +31,11 @@ const router = createRouter({
       path: "/features",
       name: "features",
       component: Features,
+    },
+    {
+      path: "/tasks",
+      name: "tasks",
+      component: Tasks,
     },
     {
       path: "/tables",

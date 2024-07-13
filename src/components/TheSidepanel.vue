@@ -117,7 +117,10 @@ export default {
         { name: "Sitemap", path: "/sitemap", active: path === "/sitemap", icon: ["fas", "sitemap"] },
         { name: "SWOT", path: "/swot", active: path === "/swot", icon: ["fas", "shield-halved"] },
       ];
-      let developmentLinks = [{ name: "Tables", path: "/tables", active: path === "/tables", icon: ["fas", "database"] }];
+      let developmentLinks = [
+        // { name: "Tasks", path: "/tasks", active: path === "/tasks", icon: ["fas", "circle-check"] },
+        { name: "Tables", path: "/tables", active: path === "/tables", icon: ["fas", "database"] },
+      ];
       let designLinks = [{ name: "Branding", path: "/branding", active: path === "/branding", icon: ["fas", "palette"] }];
       return { planningLinks, developmentLinks, designLinks };
     },

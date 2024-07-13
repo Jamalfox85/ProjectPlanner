@@ -20,6 +20,7 @@ export const projectStore = defineStore("projectStore", {
     descriptions: {},
     features: [],
     swotItems: [],
+    branding: {},
   }),
   actions: {
     setQuickMode(mode) {
@@ -57,6 +58,7 @@ export const projectStore = defineStore("projectStore", {
         this.setDescriptions();
         this.setFeatures();
         this.setSWOTItems();
+        this.setBranding();
       }
     },
     setUserProjects(projects) {
@@ -92,6 +94,12 @@ export const projectStore = defineStore("projectStore", {
       }
       this.swotItems = [];
     },
+    async setBranding() {
+      let branding = {};
+      const { data: colorData, error } = await supabase.from("color_palettes").select("*").eq("project_id", this.currentProject.id).order("created_at", { ascending: false });
+      branding.colors = colorData[0].colors;
+      this.branding = branding;
+    },
     clearProjects() {
       this.userProjects = [];
       this.currentProject = {};
@@ -126,6 +134,9 @@ export const projectStore = defineStore("projectStore", {
     },
     getSWOTItems() {
       return this.swotItems;
+    },
+    getBranding() {
+      return this.branding;
     },
   },
 });
