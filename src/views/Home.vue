@@ -23,8 +23,8 @@
           </n-button>
         </div>
       </div>
-      <div class="flex justify-center">
-        <div class="flex flex-col w-3/4 main-col-1">
+      <div class="flex justify-center flex-col lg:flex-row">
+        <div class="flex flex-col w-full lg:w-3/4 main-col-1">
           <!-- DESCRIPTION -->
           <div class="project-group description-group">
             <div class="project-label" @click="navigatePage('/description')">
@@ -33,7 +33,7 @@
                 <TextEditStyle20Filled />
               </n-icon>
             </div>
-            <div class="project-section-content">
+            <div class="project-section-content bg-blue-50">
               <n-tabs type="line" animated :default-value="'short_summary'">
                 <n-tab-pane name="elevator_pitch" tab="Elevator Pitch">
                   <p class="project-description">{{ description.elevator_pitch }}</p>
@@ -110,7 +110,7 @@
             </div>
           </div>
         </div>
-        <div class="flex flex-col w-1/4 main-col-2">
+        <div class="flex flex-col w-full lg:w-1/4 main-col-2">
           <!-- FEATURES -->
           <div class="project-group">
             <div class="project-label" @click="navigatePage('/features')">
@@ -120,7 +120,7 @@
               </n-icon>
             </div>
             <div class="project-section-content feature-section-content">
-              <ul class="project-features">
+              <ul class="project-features w-full">
                 <n-collapse>
                   <n-collapse-item v-for="feature in features" :title="feature.title" :name="feature.id" class="feature-item">
                     <div v-if="feature.description">{{ feature.description }}</div>
@@ -408,5 +408,11 @@ export default {
 .main-col-2 {
   padding: 1em;
   border-left: solid 1px var(--lightgray);
+}
+
+.n-tabs-tab--active {
+  .n-tabs-tab__label {
+    font-weight: bold;
+  }
 }
 </style>
