@@ -19,11 +19,11 @@
                 <font-awesome-icon :icon="['fas', 'pen-to-square']" />
                 <n-color-picker :modes="['hex']" class="color-picker" @update:value="updatedColor(index)" v-model:value="newColor" />
               </div>
-              <div class="bg-blue-500 text-white hover:bg-blue-600 relative w-8 h-8 rounded-lg trash-color-block flex cursor-pointer">
-                <font-awesome-icon class="m-auto" :icon="['fas', 'trash']" @click="deleteColor(index)" />
+              <div class="bg-blue-500 text-white hover:bg-blue-600 relative w-8 h-8 rounded-lg trash-color-block flex cursor-pointer" @click="deleteColor(index)">
+                <font-awesome-icon class="m-auto" :icon="['fas', 'trash']" />
               </div>
             </div>
-            <div v-if="colors.length < 5" class="color border-2 border-dashed border-gray-500 bg-slate-100 hover:bg-slate-200 cursor-pointer mr-2 w-20 h-20 rounded-full relative flex items-center justify-center empty-color">
+            <div v-if="colors && colors.length < 5" class="color border-2 border-dashed border-gray-500 bg-slate-100 hover:bg-slate-200 cursor-pointer mr-2 w-20 h-20 rounded-full relative flex items-center justify-center empty-color">
               <div class="absolute m-auto w-8 h-8 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-lg add-color-block">
                 <font-awesome-icon :icon="['fas', 'square-plus']" />
                 <n-color-picker :modes="['hex']" class="color-picker" v-model:value="addNewColor" />
@@ -36,8 +36,8 @@
             </div>
             <div class="flex">
               <div v-for="(color, index) in this.aiPalette" class="mr-2 w-20 h-40 rounded-full relative flex flex-col items-center justify-center filled-out-color" :style="{ backgroundColor: color }">
-                <div class="bg-blue-500 text-white hover:bg-blue-600 relative w-8 h-8 rounded-lg trash-color-block flex cursor-pointer">
-                  <font-awesome-icon class="m-auto" :icon="['fas', 'square-plus']" @click="addRecommendedColor(color)" />
+                <div class="bg-blue-500 text-white hover:bg-blue-600 relative w-8 h-8 rounded-lg trash-color-block flex cursor-pointer" @click="addRecommendedColor(color)">
+                  <font-awesome-icon class="m-auto" :icon="['fas', 'square-plus']" />
                 </div>
               </div>
             </div>
@@ -72,17 +72,15 @@ export default {
   methods: {
     setBrandingDetails() {
       let branding = this.store.getBranding;
-      this.colors = branding.colors || [];
+      this.branding = branding.palette || {};
+      this.colors = branding.palette?.colors || [];
     },
     async updatedColor(index) {
       this.colors[index] = this.newColor;
-
       let projectId = this.store.getCurrentProject.id;
       const { data, error } = await supabase.from("color_palettes").update({ colors: this.colors }).eq("project_id", projectId).select();
       if (error) {
         console.error("Error updating color palette", error);
-      } else {
-        this.newColor = null;
       }
     },
     async addColor() {
@@ -108,7 +106,7 @@ export default {
     async addRecommendedColor(color) {
       this.colors.push(color);
       let projectId = this.store.getCurrentProject.id;
-      const { data, error } = await supabase.from("color_palettes").update({ colors: this.colors }).eq("project_id", projectId).select();
+      const { data, error } = await supabase.from("color_palettes").upsert({ colors: this.colors, project_id: projectId, id: this.branding.id }).select();
       if (error) {
         console.error("Error adding color to palette", error);
       }
@@ -160,11 +158,14 @@ export default {
       .edit-color-block,
       .trash-color-block {
         visibility: hidden;
+        position: relative;
         .color-picker {
           position: absolute;
           top: 0;
           left: 0;
           opacity: 0;
+          height: 40px;
+          width: 40px;
           .n-color-picker-trigger__value {
             display: none;
           }

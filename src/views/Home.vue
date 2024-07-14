@@ -40,6 +40,7 @@
                 </n-tab-pane>
                 <n-tab-pane name="short_summary" tab="Short Summary">
                   <p class="project-description">{{ description.short_summary }}</p>
+                  <n-spin v-if="quickMode && !description.short_summary" />
                 </n-tab-pane>
                 <n-tab-pane name="extended_summary" tab="Extended Summary">
                   <p class="project-description">{{ description.extended_summary }}</p>
@@ -47,7 +48,39 @@
               </n-tabs>
             </div>
           </div>
-          <div class="flex hidden">
+          <!-- SWOT -->
+          <div class="project-group description-group">
+            <div class="project-label" @click="navigatePage('/description')">
+              <p>SWOT</p>
+              <n-icon>
+                <TextEditStyle20Filled />
+              </n-icon>
+            </div>
+            <div class="project-section-content">
+              <n-tabs type="line" animated :default-value="'strengths'" :placement="'left'">
+                <n-tab-pane name="strengths" tab="Strengths">
+                  <n-spin v-if="quickMode && !swot.strengths" />
+                  <div v-else>
+                    <p v-if="swot.strengths && swot.strengths.length > 0" class="m-2" v-for="item in swot.strengths">{{ quickMode ? item : item.text }}</p>
+                    <p v-else class="m-2 text-gray-500 text-xs">No Strengths Added</p>
+                  </div>
+                </n-tab-pane>
+                <n-tab-pane name="weaknesses" tab="Weaknesses">
+                  <p v-if="swot.weaknesses && swot.weaknesses.length > 0" class="m-2" v-for="item in swot.weaknesses">{{ quickMode ? item : item.text }}</p>
+                  <p v-else class="m-2 text-gray-500 text-xs">No Weaknesses Added</p>
+                </n-tab-pane>
+                <n-tab-pane name="opportunities" tab="Opportunities">
+                  <p v-if="swot.opportunities && swot.opportunities.length > 0" class="m-2" v-for="item in swot.opportunities">{{ quickMode ? item : item.text }}</p>
+                  <p v-else class="m-2 text-gray-500 text-xs">No Opportunities Added</p>
+                </n-tab-pane>
+                <n-tab-pane name="threats" tab="Threats">
+                  <p v-if="swot.threats && swot.threats.length > 0" class="m-2" v-for="item in swot.threats">{{ quickMode ? item : item.text }}</p>
+                  <p v-else class="m-2 text-gray-500 text-xs">No Threats Added</p>
+                </n-tab-pane>
+              </n-tabs>
+            </div>
+          </div>
+          <div class="flex">
             <!-- BRANDING -->
             <div class="project-group w-1/2">
               <div class="project-label" @click="navigatePage('/branding')">
@@ -57,12 +90,9 @@
                 </n-icon>
               </div>
               <div class="project-section-content">
+                <n-spin v-if="quickMode && !branding.palette" />
                 <div class="project-colors">
-                  <div class="project-color" :style="{ backgroundColor: 'var(--primary)' }"></div>
-                  <div class="project-color" :style="{ backgroundColor: 'var(--secondary)' }"></div>
-                  <div class="project-color" :style="{ backgroundColor: 'var(--tertiary)' }"></div>
-                  <div class="project-color" :style="{ backgroundColor: 'var(--dark)' }"></div>
-                  <div class="project-color" :style="{ backgroundColor: 'var(--light)' }"></div>
+                  <div v-for="color in branding.palette?.colors" class="project-color" :style="{ backgroundColor: color }"></div>
                 </div>
               </div>
             </div>
@@ -121,7 +151,7 @@
 <script>
 import { TextEditStyle20Filled } from "@vicons/fluent";
 import { Refresh } from "@vicons/tabler";
-import { NIcon, NTabs, NTabPane, NCollapse, NCollapseItem, NSelect, NButton } from "naive-ui";
+import { NIcon, NTabs, NTabPane, NCollapse, NCollapseItem, NSelect, NButton, NSpin } from "naive-ui";
 import { supabase } from "@/lib/supabaseClient";
 import { projectStore } from "@/stores/projectStore";
 import { useEventBus } from "@vueuse/core";
@@ -135,6 +165,7 @@ export default {
     NCollapseItem,
     NSelect,
     NButton,
+    NSpin,
     TextEditStyle20Filled,
     Refresh,
   },
@@ -148,6 +179,8 @@ export default {
       currentProject: null,
       description: {},
       features: [],
+      swot: {},
+      branding: {},
       loginModalBus: useEventBus("loginModalBus"),
     };
   },
@@ -174,6 +207,22 @@ export default {
     async setFeatures() {
       let features = await this.store.getFeatures;
       this.features = features;
+    },
+    async setSwot() {
+      let swotItems = await this.store.getSWOTItems;
+      if (swotItems.length > 0) {
+        let strengths = swotItems.filter((item) => item.swot_type_id === 1);
+        let weaknesses = swotItems.filter((item) => item.swot_type_id === 2);
+        let opportunities = swotItems.filter((item) => item.swot_type_id === 3);
+        let threats = swotItems.filter((item) => item.swot_type_id === 4);
+        this.swot = { strengths, weaknesses, opportunities, threats };
+        return;
+      }
+      this.swot = {};
+    },
+    async setBranding() {
+      let branding = await this.store.getBranding;
+      this.branding = branding;
     },
     changeQuickModeTitle() {
       this.quickModeTitle = this.quickModeTitles[Math.floor(Math.random() * this.quickModeTitles.length)];
@@ -222,12 +271,15 @@ export default {
             this.description = quickData.descriptions;
             this.features = quickData.features;
             this.swot = quickData.swot;
+            this.branding = quickData.branding;
           }
           return;
         }
         this.setNewTitle();
         this.setNewDescription();
         this.setFeatures();
+        this.setSwot();
+        this.setBranding();
         let currentProjectId = this.store.getCurrentProject.id;
         if (this.currentProject !== currentProjectId) {
           this.currentProject = currentProjectId;

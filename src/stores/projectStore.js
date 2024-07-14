@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { supabase } from "@/lib/supabaseClient";
-import { getTitleRecommendations, getDescriptionRecommendations, getFeatureRecommendations } from "@/services/openai";
+import { getTitleRecommendations, getDescriptionRecommendations, getFeatureRecommendations, getSWOTAnalysis, getColorPalette } from "@/services/openai";
 
 export const projectStore = defineStore("projectStore", {
   state: () => ({
@@ -14,6 +14,7 @@ export const projectStore = defineStore("projectStore", {
       },
       features: [],
       swot: {},
+      branding: {},
     },
     currentProject: {},
     userProjects: [],
@@ -29,12 +30,10 @@ export const projectStore = defineStore("projectStore", {
     },
     async setQuickModeDetails(description) {
       let titles = await getTitleRecommendations([], description);
-      console.log("Quick mode titles", titles);
       this.quickModeDetails.titles = JSON.parse(titles);
 
       let features = await getFeatureRecommendations([], description);
       let splitResponse = features.split("Features")[0];
-      console.log("Quick mode features", splitResponse);
       let formattedFeatures = JSON.parse(splitResponse);
       this.quickModeDetails.features = formattedFeatures;
 
@@ -42,7 +41,6 @@ export const projectStore = defineStore("projectStore", {
         return feature.title;
       });
       let descriptions = await getDescriptionRecommendations(description, aiFormattedFeatures);
-      console.log("Quick mode descriptions", descriptions);
       const jsonResponse = descriptions.replace(/^Recommended Description:\s*/, "");
       const descriptionObject = JSON.parse(jsonResponse);
 
@@ -50,9 +48,12 @@ export const projectStore = defineStore("projectStore", {
       this.quickModeDetails.descriptions.short_summary = descriptionObject.short_summary;
       this.quickModeDetails.descriptions.extended_summary = descriptionObject.extended_summary;
 
-      let swot = await getSWOTAnalysis(this.store.getDescriptions.short_summary);
+      let swot = await getSWOTAnalysis(description);
       const jsonSwot = JSON.parse(swot.replace(/SWOT\s*/, "").trim());
       this.quickModeDetails.swot = jsonSwot;
+
+      let brandingResponse = await getColorPalette(description);
+      this.quickModeDetails.branding.palette = { colors: JSON.parse(brandingResponse) };
 
       console.log("Quick Mode Data", this.quickModeDetails);
     },
@@ -103,7 +104,7 @@ export const projectStore = defineStore("projectStore", {
       let branding = {};
       const { data: colorData, error } = await supabase.from("color_palettes").select("*").eq("project_id", this.currentProject.id).order("created_at", { ascending: false });
       if (colorData[0]?.colors.length > 0) {
-        branding.colors = colorData[0].colors;
+        branding.palette = colorData[0];
       }
       this.branding = branding;
     },
