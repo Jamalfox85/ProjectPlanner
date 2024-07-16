@@ -19,7 +19,7 @@
         </div>
         <div class="project-actions ml-auto">
           <n-button class="bg-white" @click="deleteProject">
-            <font-awesome-icon :icon="['fas', 'trash']" class="text-blue-500" />
+            <font-awesome-icon :icon="['fas', 'trash']" class="primary-text-color" />
           </n-button>
         </div>
       </div>
@@ -97,7 +97,7 @@
               </div>
             </div>
             <!-- Pages -->
-            <div class="project-group w-1/2">
+            <div class="project-group w-1/2 hidden">
               <div class="project-label" @click="navigatePage('/sitemap')">
                 <p>Site Map</p>
                 <n-icon>

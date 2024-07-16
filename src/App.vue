@@ -17,8 +17,8 @@
           </div>
           <div class="returning-user-col flex grow flex-col items-center p-2">
             <h2 class="text-center text-lg font-bold mb-2">Plan On Staying A While?</h2>
-            <p class="mb-4" v-if="!signUpMode"><span class="text-md font-bold">Log in now.</span> Don't have an account? <span class="text-blue-500 underline cursor-pointer" @click="signUpMode = true">Sign up here.</span></p>
-            <p class="mb-4" v-else><span class="text-md font-bold">Sign up now.</span> Already have an account? <span class="text-blue-500 underline cursor-pointer" @click="signUpMode = false">Login in here.</span></p>
+            <p class="mb-4" v-if="!signUpMode"><span class="text-md font-bold">Log in now.</span> Don't have an account? <span class="primary-text-color underline cursor-pointer" @click="signUpMode = true">Sign up here.</span></p>
+            <p class="mb-4" v-else><span class="text-md font-bold">Sign up now.</span> Already have an account? <span class="primary-text-color underline cursor-pointer" @click="signUpMode = false">Login in here.</span></p>
             <div class="mb-4">
               <div v-if="signUpMode" class="flex">
                 <div class="mr-2">
@@ -166,7 +166,9 @@ export default {
         const { data: projects, error: projectsError } = await supabase.from("projects").select("*").eq("user_id", user.id).order("created_at", { ascending: true });
         if (projects.length > 0) {
           this.store.setUserProjects(projects);
-          this.store.setCurrentProject(projects[0]);
+          let lastViewedProject = JSON.parse(localStorage.getItem("ceres-project-id")) || 0;
+          let project = projects.find((project) => project.id === lastViewedProject);
+          this.store.setCurrentProject(project);
         }
       }
     },
@@ -217,9 +219,24 @@ export default {
   }
   .main {
     flex: 1;
+    .primary-text-color {
+      color: #0066ff !important;
+    }
+    .primary-bg-color {
+      background: var(--primary) !important;
+    }
   }
 }
 .lets-get-started-bttn {
   margin-top: 1em;
+}
+.n-modal,
+.n-popover {
+  .primary-text-color {
+    color: #0066ff !important;
+  }
+  .primary-bg-color {
+    background: #0066ff !important;
+  }
 }
 </style>

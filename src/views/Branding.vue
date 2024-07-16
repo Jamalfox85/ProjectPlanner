@@ -3,7 +3,7 @@
     <div class="branding_wrapper">
       <div class="branding-header flex">
         <h1>Branding</h1>
-        <n-button class="ml-auto bg-blue-500 text-white rounded-lg" @click="generateAIPalette">
+        <n-button class="ml-auto primary-bg-color text-white rounded-lg" @click="generateAIPalette">
           <Sparkle20Filled class="w-4 mr-2" />
           Generate Results
         </n-button>
@@ -15,16 +15,16 @@
           </div>
           <div class="colors flex m-4">
             <div v-for="(color, index) in colors" class="mr-2 w-20 h-40 rounded-full relative flex flex-col items-center justify-center filled-out-color" :style="{ backgroundColor: color }">
-              <div class="w-8 h-8 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-lg edit-color-block mb-4">
+              <div class="w-8 h-8 flex items-center justify-center text-white primary-bg-color hover:bg-blue-600 cursor-pointer rounded-lg edit-color-block mb-4">
                 <font-awesome-icon :icon="['fas', 'pen-to-square']" />
                 <n-color-picker :modes="['hex']" class="color-picker" @update:value="updatedColor(index)" v-model:value="newColor" />
               </div>
-              <div class="bg-blue-500 text-white hover:bg-blue-600 relative w-8 h-8 rounded-lg trash-color-block flex cursor-pointer" @click="deleteColor(index)">
+              <div class="primary-bg-color text-white hover:bg-blue-600 relative w-8 h-8 rounded-lg trash-color-block flex cursor-pointer" @click="deleteColor(index)">
                 <font-awesome-icon class="m-auto" :icon="['fas', 'trash']" />
               </div>
             </div>
             <div v-if="colors && colors.length < 5" class="color border-2 border-dashed border-gray-500 bg-slate-100 hover:bg-slate-200 cursor-pointer mr-2 w-20 h-20 rounded-full relative flex items-center justify-center empty-color">
-              <div class="absolute m-auto w-8 h-8 flex items-center justify-center text-white bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-lg add-color-block">
+              <div class="absolute m-auto w-8 h-8 flex items-center justify-center text-white primary-bg-color hover:bg-blue-600 cursor-pointer rounded-lg add-color-block">
                 <font-awesome-icon :icon="['fas', 'square-plus']" />
                 <n-color-picker :modes="['hex']" class="color-picker" v-model:value="addNewColor" />
               </div>
@@ -36,7 +36,7 @@
             </div>
             <div class="flex">
               <div v-for="(color, index) in this.aiPalette" class="mr-2 w-20 h-40 rounded-full relative flex flex-col items-center justify-center filled-out-color" :style="{ backgroundColor: color }">
-                <div class="bg-blue-500 text-white hover:bg-blue-600 relative w-8 h-8 rounded-lg trash-color-block flex cursor-pointer" @click="addRecommendedColor(color)">
+                <div class="primary-bg-color text-white hover:bg-blue-600 relative w-8 h-8 rounded-lg trash-color-block flex cursor-pointer" @click="addRecommendedColor(color)">
                   <font-awesome-icon class="m-auto" :icon="['fas', 'square-plus']" />
                 </div>
               </div>

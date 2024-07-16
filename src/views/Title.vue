@@ -1,15 +1,20 @@
 <template>
   <main>
     <div class="title_wrapper">
-      <div class="current-title-group">
-        <div class="project-label">
-          <p>Current Title</p>
+      <div class="flex items-center">
+        <div class="heading-group mb-4">
+          <div class="project-label">
+            <p>Current Title</p>
+          </div>
+          <div class="flex items-center">
+            <h1 class="current-title">{{ currentTitle.title }}</h1>
+            <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon>
+          </div>
         </div>
-        <div class="flex items-center">
-          <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon>
-          <h1 class="current-title">{{ currentTitle.title }}</h1>
-          <!-- <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon> -->
-        </div>
+        <n-button class="ml-auto primary-bg-color text-white rounded-lg" @click="generateTitleRecommendations">
+          <Sparkle20Filled class="w-4 mr-2" />
+          Generate AI Recommendations
+        </n-button>
       </div>
       <div class="main-content mt-8">
         <div class="title-input-group">
@@ -53,14 +58,14 @@
             </div>
           </div>
           <!-- AI TITLES -->
-          <div class="idea-group">
+          <div class="idea-group" v-if="aiTitles.length > 0">
             <div class="project-label">
               <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
               <p>AI Recommended Titles</p>
               <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
             </div>
-            <n-button v-if="aiTitles.length < 1" @click="generateTitleRecommendations" class="generate-titles-bttn rounded-xl mt-4">Generate Recommendations</n-button>
-            <div class="title-list" v-else>
+            <!-- <n-button v-if="aiTitles.length < 1" @click="generateTitleRecommendations" class="generate-titles-bttn rounded-xl mt-4">Generate Recommendations</n-button> -->
+            <div class="title-list">
               <div class="title-item" v-for="title in aiTitles">
                 <p class="title-text">{{ title }}</p>
                 <n-icon class="addToFavorites" @click="submitNewAITitle(title)"><Star20Regular /></n-icon>
@@ -76,7 +81,7 @@
 
 <script lang="ts">
 import { NInput, NButton, NIcon } from "naive-ui";
-import { StarEmphasis24Regular, StarEmphasis24Filled, Sparkle20Regular, Star20Filled, Star20Regular, PresenceBlocked12Regular } from "@vicons/fluent";
+import { StarEmphasis24Regular, StarEmphasis24Filled, Sparkle20Regular, Star20Filled, Star20Regular, PresenceBlocked12Regular, Sparkle20Filled } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
 import { getTitleRecommendations } from "@/services/openai.js";
 import { projectStore } from "@/stores/projectStore";
@@ -91,6 +96,7 @@ export default {
     Sparkle20Regular,
     Star20Filled,
     Star20Regular,
+    Sparkle20Filled,
     PresenceBlocked12Regular,
   },
   data() {

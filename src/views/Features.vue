@@ -1,12 +1,24 @@
 <template>
   <main>
     <div class="features_wrapper">
-      <div class="features-header flex items-center justify-between">
-        <h1>Features</h1>
-        <n-icon class="mx-2 addFeature cursor-pointer" @click="showAddFeatureDrawer = true"><AddCircle16Regular /></n-icon>
+      <div class="flex items-center">
+        <div class="heading-group mb-4">
+          <div class="flex items-center features-header">
+            <h1 class="current-title">Features</h1>
+            <!-- <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon> -->
+          </div>
+        </div>
+        <n-button class="ml-auto primary-bg-color text-white rounded-lg" @click="generateRecommendations">
+          <Sparkle20Filled class="w-4 mr-2" />
+          Generate Results
+        </n-button>
+        <n-button class="ml-4 primary-bg-color text-white rounded-lg" @click="showAddFeatureDrawer = true">
+          <AddCircle20Filled class="w-4 mr-2" />
+          Add Item
+        </n-button>
       </div>
       <div class="features-main flex">
-        <div class="features-column w-1/3 m-2">
+        <div class="features-column w-1/3 m-2 grow">
           <h2 class="text-2xl text-center mb-4 font-bold">MVP Features</h2>
           <div class="feature-group" v-for="feature in mvpFeatures">
             <div class="feature-group-header flex justify-between">
@@ -20,7 +32,7 @@
             </div>
           </div>
         </div>
-        <div class="features-column w-1/3 m-2">
+        <div class="features-column w-1/3 m-2 grow">
           <h2 class="text-2xl text-center mb-4 font-bold">Long-Term Features</h2>
           <div class="feature-group" v-for="feature in longTermFeatures">
             <div class="feature-group-header flex justify-between">
@@ -35,14 +47,13 @@
             </div>
           </div>
         </div>
-        <div class="features-column w-1/3 m-2">
+        <div class="features-column w-1/3 m-2" v-if="recommendedFeatures.length > 0">
           <div class="flex items-center justify-center mb-4">
             <n-icon class="mx-2 text-3xl"><Sparkle20Regular /></n-icon>
             <h2 class="text-2xl text-center font-bold">Recommended Features</h2>
             <n-icon class="mx-2 text-3xl"><Sparkle20Regular /></n-icon>
           </div>
-          <n-button v-if="recommendedFeatures.length < 1" class="generate-feature-recommendations-bttn" @click="generateRecommendations">Generate Recommendations</n-button>
-          <div v-else class="feature-group" v-for="feature in recommendedFeatures">
+          <div v-if="recommendedFeatures.length > 0" class="feature-group" v-for="feature in recommendedFeatures">
             <div class="feature-group-header flex justify-between">
               <p class="feature-title">{{ feature.title }}</p>
               <div class="icons flex">
@@ -72,7 +83,7 @@
 
 <script lang="js">
 import { NIcon, NDrawer, NDrawerContent, NInput, NButton } from "naive-ui";
-import { Sparkle20Regular, StarEmphasis24Filled, Star20Regular, AddCircle16Regular, Delete16Regular } from "@vicons/fluent";
+import { Sparkle20Regular, StarEmphasis24Filled, Star20Regular, AddCircle16Regular, Delete16Regular, Sparkle20Filled, AddCircle20Filled } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
 import { getFeatureRecommendations } from "@/services/openai.js";
 import { projectStore } from "@/stores/projectStore";
@@ -88,7 +99,7 @@ export default {
     StarEmphasis24Filled,
     Star20Regular,
     AddCircle16Regular,
-    Delete16Regular,
+    Delete16Regular, Sparkle20Filled, AddCircle20Filled,
   },
   data() {
     return {

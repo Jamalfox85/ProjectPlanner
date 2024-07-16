@@ -16,7 +16,7 @@
           </div>
         </template>
         <div>
-          <div v-for="project in projects" :key="project.id" :class="{ 'bg-blue-500 text-white pointer-events-none': project.id == currentProject.id }" class="p-2 cursor-pointer hover:bg-slate-200" @click="setProject(project)">
+          <div v-for="project in projects" :key="project.id" :class="{ 'primary-bg-color text-white pointer-events-none': project.id == currentProject.id }" class="p-2 cursor-pointer hover:bg-slate-200" @click="setProject(project)">
             <p>{{ project.title }}</p>
           </div>
         </div>
@@ -30,7 +30,7 @@
       </n-icon>
       <n-popover trigger="hover" class="">
         <template #trigger class="">
-          <div class="rounded-full cursor-pointer w-10 h-10 flex border-2 bg-blue-600 text-white">
+          <div class="rounded-full cursor-pointer w-10 h-10 flex border-2 primary-bg-color text-white">
             <Person16Regular class="w-6 m-auto" />
           </div>
         </template>
@@ -156,5 +156,11 @@ export default {
 .header_wrapper {
   border-bottom: solid 1px var(--lightgray);
   height: 60px;
+}
+.primary-bg-color {
+  background-color: var(--primary);
+}
+.primary-text-color {
+  color: var(--primary);
 }
 </style>

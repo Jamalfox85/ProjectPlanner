@@ -1,11 +1,19 @@
 <template>
   <main>
     <div class="description_wrapper">
-      <div class="description-header">
-        <h1>Description</h1>
+      <div class="flex items-center">
+        <div class="heading-group mb-4">
+          <div class="flex items-center description-header">
+            <h1 class="current-title">Description</h1>
+          </div>
+        </div>
+        <n-button class="ml-auto primary-bg-color text-white rounded-lg" @click="generateRecommendations">
+          <Sparkle20Filled class="w-4 mr-2" />
+          Generate AI Recommendations
+        </n-button>
       </div>
-      <div class="description-main">
-        <div class="current-description-details w-1/2 m-4 p-8">
+      <div class="description-main flex">
+        <div class="current-description-details grow min-w-1/2 m-4 p-8">
           <h2 class="text-2xl font-bold m-4 text-center mb-8">Current Description</h2>
           <div class="description-group">
             <div class="project-label mb-2"><p>Elevator Pitch</p></div>
@@ -21,10 +29,9 @@
           </div>
           <n-button class="save-bttn rounded-lg text-lg" @click="saveDescriptions">Save</n-button>
         </div>
-        <div class="ai-description-details flex flex-col items-center w-1/2 m-4 p-8">
+        <div class="ai-description-details flex flex-col items-center w-1/2 m-4 p-8" v-if="Object.keys(recommendedDescription).length > 0">
           <h2 class="text-2xl font-bold text-center m-4 mb-8">AI Recommendations</h2>
-          <n-button v-if="Object.keys(recommendedDescription).length < 1" class="generate-description-recommendations-bttn rounded-lg" @click="generateRecommendations">Generate Recommendations</n-button>
-          <div v-else>
+          <div v-if="Object.keys(recommendedDescription).length > 0">
             <div class="description-group">
               <div class="project-label mb-2">
                 <n-icon class="mx-2"><Sparkle20Regular /></n-icon>
@@ -75,7 +82,7 @@
 
 <script>
 import { NInput, NIcon, NButton } from "naive-ui";
-import { Sparkle20Regular, AddCircle20Filled } from "@vicons/fluent";
+import { Sparkle20Regular, AddCircle20Filled, Sparkle20Filled } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
 import { getDescriptionRecommendations } from "@/services/openai.js";
 import { projectStore } from "@/stores/projectStore";
@@ -87,6 +94,7 @@ export default {
     NButton,
     Sparkle20Regular,
     AddCircle20Filled,
+    Sparkle20Filled,
   },
   data() {
     return {

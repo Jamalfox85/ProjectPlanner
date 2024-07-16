@@ -16,7 +16,7 @@
             </div>
           </template>
           <div>
-            <div v-for="project in projects" :key="project.id" :class="{ 'bg-blue-500 text-white pointer-events-none': project.id == currentProject.id }" class="p-2 cursor-pointer hover:bg-slate-200" @click="setProject(project)">
+            <div v-for="project in projects" :key="project.id" :class="{ 'primary-bg-color text-white pointer-events-none': project.id == currentProject.id }" class="p-2 cursor-pointer hover:bg-slate-200" @click="setProject(project)">
               <p>{{ project.title }}</p>
             </div>
           </div>
@@ -135,6 +135,7 @@ export default {
     },
     setProject(project) {
       this.store.setCurrentProject(project);
+      localStorage.setItem("ceres-project-id", project.id);
     },
     async addNewProject() {
       const {

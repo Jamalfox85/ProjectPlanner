@@ -3,19 +3,16 @@
     <div class="swot_wrapper flex flex-col relative">
       <div class="flex items-center">
         <div class="heading-group mb-4">
-          <div class="project-label">
-            <p>Current Title</p>
-          </div>
           <div class="flex items-center">
             <h1 class="current-title">S.W.O.T.</h1>
             <!-- <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon> -->
           </div>
         </div>
-        <n-button class="ml-auto bg-blue-500 text-white rounded-lg" @click="generateSwot">
+        <n-button class="ml-auto primary-bg-color text-white rounded-lg" @click="generateSwot">
           <Sparkle20Filled class="w-4 mr-2" />
           Generate Results
         </n-button>
-        <n-button class="ml-4 bg-blue-500 text-white rounded-lg" @click="showAddSWOTDrawer = true">
+        <n-button class="ml-4 primary-bg-color text-white rounded-lg" @click="showAddSWOTDrawer = true">
           <AddCircle20Filled class="w-4 mr-2" />
           Add Item
         </n-button>
@@ -26,7 +23,7 @@
             <h2 class="text-lg font-bold">Strengths</h2>
             <div class="list-outer-container">
               <ul class="list-inner-container">
-                <li v-for="item in aiResponse.strengths" class="list-item-container bg-blue-500 text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }} <AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 1)" /></li>
+                <li v-for="item in aiResponse.strengths" class="list-item-container primary-bg-color text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }} <AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 1)" /></li>
                 <li v-for="item in strengths" class="list-item-container">{{ item.text }}</li>
               </ul>
             </div>
@@ -35,7 +32,7 @@
             <h2 class="text-lg font-bold">Weaknesses</h2>
             <div class="list-outer-container">
               <ul class="list-inner-container">
-                <li v-for="item in aiResponse.weaknesses" class="list-item-container bg-blue-500 text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }} <AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 2)" /></li>
+                <li v-for="item in aiResponse.weaknesses" class="list-item-container primary-bg-color text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }} <AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 2)" /></li>
                 <li v-for="item in weaknesses" class="list-item-container">{{ item.text }}</li>
               </ul>
             </div>
@@ -44,7 +41,7 @@
             <h2 class="text-lg font-bold">Opportunities</h2>
             <div class="list-outer-container">
               <ul class="list-inner-container">
-                <li v-for="item in aiResponse.opportunities" class="list-item-container bg-blue-500 text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }}<AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 3)" /></li>
+                <li v-for="item in aiResponse.opportunities" class="list-item-container primary-bg-color text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }}<AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 3)" /></li>
                 <li v-for="item in opportunities" class="list-item-container">{{ item.text }}</li>
               </ul>
             </div>
@@ -53,7 +50,7 @@
             <h2 class="text-lg font-bold">Threats</h2>
             <div class="list-outer-container">
               <ul class="list-inner-container">
-                <li v-for="item in aiResponse.threats" class="list-item-container bg-blue-500 text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }}<AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 4)" /></li>
+                <li v-for="item in aiResponse.threats" class="list-item-container primary-bg-color text-white"><Sparkle20Filled class="w-4 mr-2 inline-block" /> {{ item }}<AddCircle20Filled class="w-4 mr-2 inline-block cursor-pointer" @click="addAISwot(item, 4)" /></li>
                 <li v-for="item in threats" class="list-item-container">{{ item.text }}</li>
               </ul>
             </div>
