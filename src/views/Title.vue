@@ -2,7 +2,7 @@
   <main>
     <div class="title_wrapper">
       <div class="flex items-center">
-        <div class="heading-group mb-4">
+        <div class="heading-group mb-4 mr-auto">
           <div class="project-label">
             <p>Current Title</p>
           </div>
@@ -11,7 +11,8 @@
             <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon>
           </div>
         </div>
-        <n-button class="ml-auto primary-bg-color text-white rounded-lg" @click="generateTitleRecommendations">
+        <n-spin class="mx-2" v-if="recommendationsLoading" />
+        <n-button class="mx-2 primary-bg-color text-white rounded-lg" @click="generateTitleRecommendations" :disabled="aiTitles.length > 0 || recommendationsLoading">
           <Sparkle20Filled class="w-4 mr-2" />
           Generate AI Recommendations
         </n-button>
@@ -80,7 +81,7 @@
 </template>
 
 <script lang="ts">
-import { NInput, NButton, NIcon } from "naive-ui";
+import { NInput, NButton, NIcon, NSpin } from "naive-ui";
 import { StarEmphasis24Regular, StarEmphasis24Filled, Sparkle20Regular, Star20Filled, Star20Regular, PresenceBlocked12Regular, Sparkle20Filled } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
 import { getTitleRecommendations } from "@/services/openai.js";
@@ -91,6 +92,7 @@ export default {
     NInput,
     NButton,
     NIcon,
+    NSpin,
     StarEmphasis24Regular,
     StarEmphasis24Filled,
     Sparkle20Regular,
@@ -106,6 +108,7 @@ export default {
       favoriteTitles: [],
       aiTitles: [],
       pastTitles: [],
+      recommendationsLoading: false,
     };
   },
   computed: {},
@@ -204,9 +207,10 @@ export default {
       this.store.setTitles();
     },
     async generateTitleRecommendations() {
+      this.recommendationsLoading = true;
       let recommendations = await getTitleRecommendations(this.favoriteTitles, "App to help solo developers plan projects before development");
       this.aiTitles = JSON.parse(recommendations);
-      console.log("AI Titles", this.aiTitles);
+      this.recommendationsLoading = false;
     },
     getTitles() {
       let titles = this.store.getTitles;
@@ -243,7 +247,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .title_wrapper {
   padding: 2em;
   height: 100%;

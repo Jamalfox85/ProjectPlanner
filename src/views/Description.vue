@@ -2,12 +2,13 @@
   <main>
     <div class="description_wrapper">
       <div class="flex items-center">
-        <div class="heading-group mb-4">
+        <div class="heading-group mb-4 mr-auto">
           <div class="flex items-center description-header">
             <h1 class="current-title">Description</h1>
           </div>
         </div>
-        <n-button class="ml-auto primary-bg-color text-white rounded-lg" @click="generateRecommendations">
+        <n-spin class="mx-2" v-if="recommendationsLoading" />
+        <n-button class="mx-2 primary-bg-color text-white rounded-lg" @click="generateRecommendations" :disabled="Object.keys(recommendedDescription).length > 0 || recommendationsLoading">
           <Sparkle20Filled class="w-4 mr-2" />
           Generate AI Recommendations
         </n-button>
@@ -81,7 +82,7 @@
 </template>
 
 <script>
-import { NInput, NIcon, NButton } from "naive-ui";
+import { NInput, NIcon, NButton, NSpin } from "naive-ui";
 import { Sparkle20Regular, AddCircle20Filled, Sparkle20Filled } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
 import { getDescriptionRecommendations } from "@/services/openai.js";
@@ -92,6 +93,7 @@ export default {
     NInput,
     NIcon,
     NButton,
+    NSpin,
     Sparkle20Regular,
     AddCircle20Filled,
     Sparkle20Filled,
@@ -103,6 +105,7 @@ export default {
       elevatorPitch: "",
       shortSummary: "",
       extendedSummary: "",
+      recommendationsLoading: false,
     };
   },
   methods: {
@@ -125,10 +128,12 @@ export default {
       window.$message.success("Descriptions Saved!");
     },
     async generateRecommendations() {
+      this.recommendationsLoading = true;
       let response = await getDescriptionRecommendations(this.description, ["Plan App Title Ideas", "Project Templates", "Plan App Descriptions"]);
       const jsonResponse = response.replace(/^Recommended Description:\s*/, "");
       const descriptionObject = JSON.parse(jsonResponse);
       this.recommendedDescription = descriptionObject;
+      this.recommendationsLoading = false;
     },
     getDescriptions() {
       let description = this.store.getDescriptions;

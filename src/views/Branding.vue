@@ -2,8 +2,9 @@
   <main>
     <div class="branding_wrapper">
       <div class="branding-header flex">
-        <h1>Branding</h1>
-        <n-button class="ml-auto primary-bg-color text-white rounded-lg" @click="generateAIPalette">
+        <h1 class="mr-auto">Branding</h1>
+        <n-spin class="mx-2" v-if="recommendationsLoading" />
+        <n-button class="mx-2 primary-bg-color text-white rounded-lg" @click="generateAIPalette" :disabled="this.aiPalette.length > 0 || recommendationsLoading">
           <Sparkle20Filled class="w-4 mr-2" />
           Generate Results
         </n-button>
@@ -51,7 +52,7 @@
 <script lang="ts">
 import { projectStore } from "@/stores/projectStore";
 import { Sparkle20Filled } from "@vicons/fluent";
-import { NColorPicker, NButton } from "naive-ui";
+import { NColorPicker, NButton, NSpin } from "naive-ui";
 import { supabase } from "@/lib/supabaseClient";
 import { getColorPalette } from "@/services/openai";
 
@@ -60,6 +61,7 @@ export default {
     Sparkle20Filled,
     NColorPicker,
     NButton,
+    NSpin,
   },
   data() {
     return {
@@ -67,6 +69,7 @@ export default {
       newColor: "",
       addNewColor: "",
       aiPalette: [],
+      recommendationsLoading: false,
     };
   },
   methods: {
@@ -100,8 +103,10 @@ export default {
       }
     },
     async generateAIPalette() {
+      this.recommendationsLoading = true;
       let response = await getColorPalette(this.store.getDescriptions.short_summary);
       this.aiPalette = JSON.parse(response);
+      this.recommendationsLoading = false;
     },
     async addRecommendedColor(color) {
       this.colors.push(color);

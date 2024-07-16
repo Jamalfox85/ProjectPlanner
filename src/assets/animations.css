@@ -1,0 +1,63 @@
+/* Keyframes for Slide Up */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* CSS Class for Slide Up */
+.slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+/* Keyframes for Slide Down */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* CSS Class for Slide Down */
+.slide-down {
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+/* Keyframes for Fade In */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* CSS Class for Fade In */
+.fade-in {
+  animation: fadeIn 0.5s ease-in forwards;
+}
+
+/* Keyframes for Fade Out */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* CSS Class for Fade Out */
+.fade-out {
+  animation: fadeOut 0.5s ease-in forwards;
+}

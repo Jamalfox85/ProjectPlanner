@@ -2,17 +2,18 @@
   <main>
     <div class="swot_wrapper flex flex-col relative">
       <div class="flex items-center">
-        <div class="heading-group mb-4">
+        <div class="heading-group mb-4 mr-auto">
           <div class="flex items-center">
             <h1 class="current-title">S.W.O.T.</h1>
             <!-- <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon> -->
           </div>
         </div>
-        <n-button class="ml-auto primary-bg-color text-white rounded-lg" @click="generateSwot">
+        <n-spin class="mx-2" v-if="recommendationsLoading" />
+        <n-button class="mx-2 primary-bg-color text-white rounded-lg" @click="generateSwot" :disabled="aiResponse.strengths != undefined || recommendationsLoading">
           <Sparkle20Filled class="w-4 mr-2" />
           Generate Results
         </n-button>
-        <n-button class="ml-4 primary-bg-color text-white rounded-lg" @click="showAddSWOTDrawer = true">
+        <n-button class="mx-2 primary-bg-color text-white rounded-lg" @click="showAddSWOTDrawer = true">
           <AddCircle20Filled class="w-4 mr-2" />
           Add Item
         </n-button>
@@ -78,7 +79,7 @@
 
 <script lang="js">
 import { Sparkle20Filled, TextEditStyle20Filled, AddCircle20Filled } from "@vicons/fluent";
-import { NIcon, NDrawer, NDrawerContent, NSelect, NButton, NInput } from "naive-ui";
+import { NIcon, NDrawer, NDrawerContent, NSelect, NButton, NInput, NSpin } from "naive-ui";
 import { projectStore } from "@/stores/projectStore";
 import { supabase } from "@/lib/supabaseClient";
 import { getSWOTAnalysis } from "@/services/openai";
@@ -93,7 +94,7 @@ export default {
     NDrawerContent,
     NSelect,
     NButton,
-    NInput,
+    NInput, NSpin,
   },
   data() {
     return {
@@ -105,6 +106,7 @@ export default {
       showAddSWOTDrawer: false,
       newSWOTText: "",
       newSWOTType: 1,
+      recommendationsLoading: false,
     };
   },
   computed: {
@@ -149,6 +151,7 @@ export default {
       this.showAddSWOTDrawer = false;
     },
     async generateSwot() {
+      this.recommendationsLoading = true;
       let response = await getSWOTAnalysis(this.store.getDescriptions.short_summary);
       const jsonResponse = JSON.parse(response.replace(/SWOT\s*/, '').trim());
 
@@ -156,6 +159,7 @@ export default {
       this.aiResponse.weaknesses = jsonResponse.weaknesses
       this.aiResponse.opportunities = jsonResponse.opportunities
       this.aiResponse.threats = jsonResponse.threats
+      this.recommendationsLoading = false;
     },
     async addAISwot(item, type) {
       const { data, error } = await supabase

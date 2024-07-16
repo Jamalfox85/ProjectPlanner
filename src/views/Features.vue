@@ -2,17 +2,18 @@
   <main>
     <div class="features_wrapper">
       <div class="flex items-center">
-        <div class="heading-group mb-4">
+        <div class="heading-group mb-4 mr-auto">
           <div class="flex items-center features-header">
             <h1 class="current-title">Features</h1>
             <!-- <n-icon class="text-4xl mx-2 currentTitleIcon"><StarEmphasis24Filled /></n-icon> -->
           </div>
         </div>
-        <n-button class="ml-auto primary-bg-color text-white rounded-lg" @click="generateRecommendations">
+        <n-spin class="mx-2" v-if="recommendationsLoading" />
+        <n-button class="mx-2 primary-bg-color text-white rounded-lg" @click="generateRecommendations" :disabled="recommendedFeatures.length > 0 || recommendationsLoading">
           <Sparkle20Filled class="w-4 mr-2" />
           Generate Results
         </n-button>
-        <n-button class="ml-4 primary-bg-color text-white rounded-lg" @click="showAddFeatureDrawer = true">
+        <n-button class="mx-2 primary-bg-color text-white rounded-lg" @click="showAddFeatureDrawer = true">
           <AddCircle20Filled class="w-4 mr-2" />
           Add Item
         </n-button>
@@ -82,7 +83,7 @@
 </template>
 
 <script lang="js">
-import { NIcon, NDrawer, NDrawerContent, NInput, NButton } from "naive-ui";
+import { NIcon, NDrawer, NDrawerContent, NInput, NButton, NSpin } from "naive-ui";
 import { Sparkle20Regular, StarEmphasis24Filled, Star20Regular, AddCircle16Regular, Delete16Regular, Sparkle20Filled, AddCircle20Filled } from "@vicons/fluent";
 import { supabase } from "@/lib/supabaseClient";
 import { getFeatureRecommendations } from "@/services/openai.js";
@@ -94,7 +95,7 @@ export default {
     NDrawer,
     NDrawerContent,
     NInput,
-    NButton,
+    NButton, NSpin,
     Sparkle20Regular,
     StarEmphasis24Filled,
     Star20Regular,
@@ -109,6 +110,7 @@ export default {
       mvpFeatures: [],
       longTermFeatures: [],
       recommendedFeatures: [],
+      recommendationsLoading: false,
     };
   },
   methods: {
@@ -187,9 +189,11 @@ export default {
       window.$message.warning("Feature Removed");
     },
     async generateRecommendations() {
+      this.recommendationsLoading = true;
       let description = this.store.getDescriptions;
       let recommendations = await getFeatureRecommendations([...this.mvpFeatures, ...this.longTermFeatures], description.extended_summary.length > 0 ? description.extended_summary : description.short_summary);
       this.recommendedFeatures = JSON.parse(recommendations);
+      this.recommendationsLoading = false;
     },
     getFeatures() {
       let features = this.store.getFeatures;
