@@ -116,6 +116,7 @@ export default {
         { name: "Features", path: "/features", active: path === "/features", icon: ["fas", "list-check"] },
         // { name: "Sitemap", path: "/sitemap", active: path === "/sitemap", icon: ["fas", "sitemap"] },
         { name: "SWOT", path: "/swot", active: path === "/swot", icon: ["fas", "shield-halved"] },
+        { name: "Customers", path: "/customers", active: path === "/customers", icon: ["fas", "users"] },
       ];
       let developmentLinks = [
         // { name: "Tasks", path: "/tasks", active: path === "/tasks", icon: ["fas", "circle-check"] },

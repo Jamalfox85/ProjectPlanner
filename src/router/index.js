@@ -5,6 +5,7 @@ import Description from "../views/Description.vue";
 import Features from "../views/Features.vue";
 import Tasks from "../views/Tasks.vue";
 import Tables from "../views/Tables.vue";
+import Customers from "../views/Customers.vue";
 import Branding from "../views/Branding.vue";
 import Sitemap from "../views/Sitemap.vue";
 import Swot from "../views/Swot.vue";
@@ -41,6 +42,11 @@ const router = createRouter({
       path: "/tables",
       name: "tables",
       component: Tables,
+    },
+    {
+      path: "/customers",
+      name: "customers",
+      component: Customers,
     },
     {
       path: "/branding",
