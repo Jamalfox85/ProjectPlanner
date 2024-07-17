@@ -110,7 +110,7 @@ export default {
   },
   methods: {
     async saveDescriptions() {
-      let projectId = this.store.getcurrentProject.id;
+      let projectId = this.store.getcurrentProject?.id;
       let updatedDescription = {
         elevator_pitch: this.elevatorPitch,
         short_summary: this.shortSummary,

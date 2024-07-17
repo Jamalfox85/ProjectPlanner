@@ -245,8 +245,8 @@ export default {
         return project;
       });
       let currentProject = this.store.getCurrentProject;
-      if (currentProject && currentProject.id) {
-        this.currentProject = this.store.getcurrentProject.id;
+      if (currentProject && currentProject?.id) {
+        this.currentProject = this.store.getcurrentProject?.id;
       }
     }
   },
@@ -280,7 +280,7 @@ export default {
         this.setFeatures();
         this.setSwot();
         this.setBranding();
-        let currentProjectId = this.store.getcurrentProject.id;
+        let currentProjectId = this.store.getcurrentProject?.id;
         if (this.currentProject !== currentProjectId) {
           this.currentProject = currentProjectId;
         }

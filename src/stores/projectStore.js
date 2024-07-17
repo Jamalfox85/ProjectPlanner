@@ -59,7 +59,7 @@ export const projectStore = defineStore("projectStore", {
     },
     setCurrentProject(project) {
       this.currentProject = project;
-      if (this.currentProject.id) {
+      if (this.currentProject?.id) {
         this.setTitles();
         this.setDescriptions();
         this.setFeatures();
@@ -71,13 +71,13 @@ export const projectStore = defineStore("projectStore", {
       this.userProjects = projects;
     },
     async setTitles() {
-      const { data, error } = await supabase.from("titles").select("*").eq("project_id", this.currentProject.id).order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("titles").select("*").eq("project_id", this.currentProject?.id).order("created_at", { ascending: false });
       if (data.length > 0) {
         this.titles = data;
       }
     },
     async setDescriptions() {
-      let { data: descriptions, error } = await supabase.from("descriptions").select("*").eq("project_id", this.currentProject.id).order("created_at", { ascending: false });
+      let { data: descriptions, error } = await supabase.from("descriptions").select("*").eq("project_id", this.currentProject?.id).order("created_at", { ascending: false });
       if (descriptions.length > 0) {
         this.descriptions = descriptions[0];
         return;
@@ -85,7 +85,7 @@ export const projectStore = defineStore("projectStore", {
       this.descriptions = {};
     },
     async setFeatures() {
-      const { data: features, error } = await supabase.from("features").select("*").eq("project_id", this.currentProject.id).order("created_at", { ascending: false });
+      const { data: features, error } = await supabase.from("features").select("*").eq("project_id", this.currentProject?.id).order("created_at", { ascending: false });
       if (features.length > 0) {
         this.features = features;
         return;
@@ -93,7 +93,7 @@ export const projectStore = defineStore("projectStore", {
       this.features = [];
     },
     async setSWOTItems() {
-      const { data: swotItems, error } = await supabase.from("swot_items").select("*").eq("project_id", this.currentProject.id).order("created_at", { ascending: false });
+      const { data: swotItems, error } = await supabase.from("swot_items").select("*").eq("project_id", this.currentProject?.id).order("created_at", { ascending: false });
       if (swotItems.length > 0) {
         this.swotItems = swotItems;
         return;
@@ -102,7 +102,7 @@ export const projectStore = defineStore("projectStore", {
     },
     async setBranding() {
       let branding = {};
-      const { data: colorData, error } = await supabase.from("color_palettes").select("*").eq("project_id", this.currentProject.id).order("created_at", { ascending: false });
+      const { data: colorData, error } = await supabase.from("color_palettes").select("*").eq("project_id", this.currentProject?.id).order("created_at", { ascending: false });
       if (colorData[0]?.colors.length > 0) {
         branding.palette = colorData[0];
       }
