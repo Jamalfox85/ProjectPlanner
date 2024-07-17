@@ -228,12 +228,15 @@ export default {
       this.quickModeTitle = this.quickModeTitles[Math.floor(Math.random() * this.quickModeTitles.length)];
     },
     async deleteProject() {
-      const { error } = await supabase.from("projects").delete().eq("id", this.currentProject);
+      const { error } = await supabase.from("projects").delete().eq("id", this.store.currentProject?.id);
       if (error) {
         window.$message.error("An error occurred while deleting project");
         return;
       }
       window.$message.success("Project deleted successfully");
+      if (this.store.getUserProjects.length > 1) {
+        this.store.setCurrentProject(this.store.getUserProjects[0]);
+      }
     },
   },
   async mounted() {
