@@ -283,7 +283,7 @@ export default {
         this.setFeatures();
         this.setSwot();
         this.setBranding();
-        let currentProjectId = this.store.getcurrentProject?.id;
+        let currentProjectId = this.store.getCurrentProject?.id;
         if (this.currentProject !== currentProjectId) {
           this.currentProject = currentProjectId;
         }

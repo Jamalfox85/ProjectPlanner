@@ -141,7 +141,7 @@ export default {
     async addNewSWOT() {
       const { data, error } = await supabase
         .from("swot_items")
-        .insert([{ text: this.newSWOTText, swot_type_id: this.newSWOTType, project_id: this.store.getcurrentProject?.id }])
+        .insert([{ text: this.newSWOTText, swot_type_id: this.newSWOTType, project_id: this.store.getCurrentProject?.id }])
         .select();
       if (error) {
         window.$message.error(error.message);
@@ -164,7 +164,7 @@ export default {
     async addAISwot(item, type) {
       const { data, error } = await supabase
         .from("swot_items")
-        .insert([{ text: item, swot_type_id: type, project_id: this.store.getcurrentProject?.id }])
+        .insert([{ text: item, swot_type_id: type, project_id: this.store.getCurrentProject?.id }])
         .select();
       if (error) {
         window.$message.error(error.message);

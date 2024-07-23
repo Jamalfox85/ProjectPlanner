@@ -143,7 +143,7 @@ export default {
         title: this.featureTitle,
         description: this.featureDescription,
         is_mvp: false,
-        project_id: this.store.getcurrentProject?.id,
+        project_id: this.store.getCurrentProject?.id,
       };
       const { data, error } = await supabase.from("features").insert(newFeature).select();
       this.store.setFeatures();
@@ -163,7 +163,7 @@ export default {
         title: feature.title,
         description: feature.description,
         is_mvp: false,
-        project_id: this.store.getcurrentProject?.id,
+        project_id: this.store.getCurrentProject?.id,
       };
       const { data, error } = await supabase.from("features").insert(newFeature).select();
       this.store.setFeatures();

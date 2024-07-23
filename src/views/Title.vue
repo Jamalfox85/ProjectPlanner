@@ -137,7 +137,7 @@ export default {
         title: title,
         is_current_title: false,
         is_favorite_title: false,
-        project_id: this.store.getcurrentProject?.id,
+        project_id: this.store.getCurrentProject?.id,
       };
       const { data, error } = await supabase.from("titles").insert(newTitle).select();
       this.store.setTitles();
@@ -199,8 +199,8 @@ export default {
       let currentTitle = is_current_title;
       let favoriteTitle = is_favorite_title;
       if ((is_current_title = true)) {
-        const { data: arrayData, error: arrayError } = await supabase.from("titles").update({ is_current_title: false }).eq("project_id", this.store.getcurrentProject?.id).select("*");
-        const { data: projectData, error: projectError } = await supabase.from("projects").update({ title: this.currentTitle.title }).eq("id", this.store.getcurrentProject?.id).select("*");
+        const { data: arrayData, error: arrayError } = await supabase.from("titles").update({ is_current_title: false }).eq("project_id", this.store.getCurrentProject?.id).select("*");
+        const { data: projectData, error: projectError } = await supabase.from("projects").update({ title: this.currentTitle.title }).eq("id", this.store.getCurrentProject?.id).select("*");
         this.store.setTitles();
       }
       const { data, error } = await supabase.from("titles").update({ is_current_title: currentTitle, is_favorite_title: favoriteTitle }).eq("id", title.id).select();

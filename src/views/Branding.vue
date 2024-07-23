@@ -80,7 +80,7 @@ export default {
     },
     async updatedColor(index) {
       this.colors[index] = this.newColor;
-      let projectId = this.store.getcurrentProject?.id;
+      let projectId = this.store.getCurrentProject?.id;
       const { data, error } = await supabase.from("color_palettes").update({ colors: this.colors }).eq("project_id", projectId).select();
       if (error) {
         window.$message.error("Error updating color palette");
@@ -88,7 +88,7 @@ export default {
     },
     async addColor() {
       this.colors.push(this.addNewColor);
-      let projectId = this.store.getcurrentProject?.id;
+      let projectId = this.store.getCurrentProject?.id;
       const { data, error } = await supabase.from("color_palettes").update({ colors: this.colors }).eq("project_id", projectId).select();
       if (error) {
         window.$message.error("Error adding color to palette");
@@ -96,7 +96,7 @@ export default {
     },
     async deleteColor(index) {
       this.colors.splice(index, 1);
-      let projectId = this.store.getcurrentProject?.id;
+      let projectId = this.store.getCurrentProject?.id;
       const { data, error } = await supabase.from("color_palettes").update({ colors: this.colors }).eq("project_id", projectId).select();
       if (error) {
         window.$message.error("Error deleting color from palette");
@@ -110,7 +110,7 @@ export default {
     },
     async addRecommendedColor(color) {
       this.colors.push(color);
-      let projectId = this.store.getcurrentProject?.id;
+      let projectId = this.store.getCurrentProject?.id;
       const { data, error } = await supabase.from("color_palettes").upsert({ colors: this.colors, project_id: projectId, id: this.branding.id }).select();
       if (error) {
         window.$message.error("Error adding color to palette");
