@@ -49,7 +49,7 @@
   </main>
 </template>
 
-<script lang="ts">
+<script>
 import { projectStore } from "@/stores/projectStore";
 import { Sparkle20Filled } from "@vicons/fluent";
 import { NColorPicker, NButton, NSpin } from "naive-ui";
@@ -83,7 +83,7 @@ export default {
       let projectId = this.store.getcurrentProject?.id;
       const { data, error } = await supabase.from("color_palettes").update({ colors: this.colors }).eq("project_id", projectId).select();
       if (error) {
-        console.error("Error updating color palette", error);
+        window.$message.error("Error updating color palette");
       }
     },
     async addColor() {
@@ -91,7 +91,7 @@ export default {
       let projectId = this.store.getcurrentProject?.id;
       const { data, error } = await supabase.from("color_palettes").update({ colors: this.colors }).eq("project_id", projectId).select();
       if (error) {
-        console.error("Error adding color to palette", error);
+        window.$message.error("Error adding color to palette");
       }
     },
     async deleteColor(index) {
@@ -99,7 +99,7 @@ export default {
       let projectId = this.store.getcurrentProject?.id;
       const { data, error } = await supabase.from("color_palettes").update({ colors: this.colors }).eq("project_id", projectId).select();
       if (error) {
-        console.error("Error deleting color from palette", error);
+        window.$message.error("Error deleting color from palette");
       }
     },
     async generateAIPalette() {
@@ -113,7 +113,7 @@ export default {
       let projectId = this.store.getcurrentProject?.id;
       const { data, error } = await supabase.from("color_palettes").upsert({ colors: this.colors, project_id: projectId, id: this.branding.id }).select();
       if (error) {
-        console.error("Error adding color to palette", error);
+        window.$message.error("Error adding color to palette");
       }
     },
   },

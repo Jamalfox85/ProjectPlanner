@@ -2,8 +2,8 @@
   <header class="header_wrapper p-2 flex items-center">
     <!-- LOGO -->
     <div class="logo flex items-center text-xl ml-8">
-      <img src="@/assets/images/logo.png" alt="Ceres Logo" class="w-8 h-8" />
-      <h1>Ceres</h1>
+      <img src="@/assets/images/logo.png" alt="Gemini Logo" class="w-8 h-8" />
+      <h1>Gemini</h1>
     </div>
 
     <!-- NAVIGATION -->
@@ -46,7 +46,7 @@
     <n-modal v-model:show="showHelpModal">
       <n-card style="width: 600px" title="Hello There!" :bordered="false" size="huge" role="dialog" aria-modal="true" class="rounded-xl">
         <template #header-extra> <Close @click="showHelpModal = false" class="w-8 cursor-pointer" /> </template>
-        <h1 class="mb-2">Thanks for checking out Ceres! 👋</h1>
+        <h1 class="mb-2">Thanks for checking out Gemini! 👋</h1>
         <p class="mb-2">The main goal of this app is to help solo devs organize projects. Whether you're using this app to plan your portfolio projects, stress-test your next micro saas idea, or just track your project ideas in something other than a spreadsheet.</p>
         <p class="mb-2">The app is broken down into 7 sections:</p>
         <ul class="list-disc mb-4">
@@ -115,7 +115,6 @@ export default {
       ];
     },
     projects() {
-      console.log(this.store.getUserProjects);
       return this.store.getUserProjects;
     },
   },

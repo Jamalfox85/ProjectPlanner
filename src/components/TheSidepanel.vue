@@ -6,10 +6,10 @@
           <template #trigger class="">
             <div class="project-block flex items-center cursor-pointer hover:bg-gray-200 p-2 rounded-xl">
               <div class="project-logo mr-2">
-                <img src="@/assets/images/logo.png" alt="Ceres Logo" class="min-w-8 max-w-8 min-h-8 max-h-8" />
+                <img src="@/assets/images/logo.png" alt="Gemini Logo" class="min-w-8 max-w-8 min-h-8 max-h-8" />
               </div>
               <div>
-                <b>{{ currentProject?.title || "Ceres" }}</b>
+                <b>{{ currentProject?.title || "Gemini" }}</b>
                 <font-awesome-icon class="mx-2" :icon="['fas', 'chevron-down']" />
                 <!-- <p class="text-xs">Subtitle</p> -->
               </div>
@@ -136,7 +136,7 @@ export default {
     },
     setProject(project) {
       this.store.setCurrentProject(project);
-      localStorage.setItem("ceres-project-id", project.id);
+      localStorage.setItem("gemini-project-id", project.id);
     },
     async addNewProject() {
       const {
@@ -156,7 +156,26 @@ export default {
       this.showAddProjectDrawer = false;
     },
   },
-  mounted() {},
+  mounted() {
+    let projects = this.store.getUserProjects;
+    if (projects.length > 0) {
+      this.projects = projects.map((project) => {
+        project.value = project.id;
+        project.label = project.title;
+        return project;
+      });
+      console.log("ping");
+      let currentProjectId = localStorage.getItem("gemini-project-id");
+      if (currentProjectId) {
+        let storedProject = projects.find((project) => project.id === parseInt(currentProjectId));
+        this.store.setCurrentProject(storedProject);
+        this.currentProject = storedProject;
+      } else {
+        this.store.setCurrentProject(projects[0]);
+        this.currentProject = projects[0];
+      }
+    }
+  },
   watch: {
     store: {
       async handler() {
@@ -167,12 +186,13 @@ export default {
             project.label = project.title;
             return project;
           });
-          this.currentProject = this.store.getCurrentProject;
         } else {
           this.projects = [];
           this.currentProject = null;
         }
         this.quickMode = this.store.getQuickMode;
+        let currentProject = this.store.getCurrentProject;
+        this.currentProject = currentProject;
       },
       deep: true,
       immediate: true,

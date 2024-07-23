@@ -6,7 +6,7 @@
       <RouterView class="main" />
     </div>
     <n-modal v-model:show="showModal" :mask-closable="forceLoginMode ? true : false">
-      <n-card style="width: 90%" title="Welcome to Ceres!" :bordered="false" size="huge" role="dialog" aria-modal="true">
+      <n-card style="width: 90%" title="Welcome to Gemini!" :bordered="false" size="huge" role="dialog" aria-modal="true">
         <div class="flex">
           <div v-if="!forceLoginMode" class="new-user-col min-w-1/2 flex flex-col items-center p-2">
             <h2 class="text-center text-lg font-bold mb-2">Just Stopping By?</h2>
@@ -111,13 +111,11 @@ export default {
       if (error) {
         window.$message.error(error.message);
       } else {
-        console.log("LOGGED IN", data);
-        this.setLoadInProject();
+        await this.setLoadInProject();
         this.showModal = false;
       }
     },
     async signUp() {
-      console.log("ping");
       if (this.password.length > 8) {
         window.$message.error("Password must be at least 8 characters long");
         return;
@@ -141,7 +139,6 @@ export default {
       if (error) {
         window.$message.error(error.message);
       } else {
-        console.log("signed up", data);
         const { data: userData, error: userError } = await supabase
           .from("users")
           .insert([{ user_id: data.user.id, first_name: this.firstName, last_name: this.lastName }])
@@ -153,7 +150,12 @@ export default {
           .insert([{ title: `Project-${randomNumber}`, user_id: data.user.id }])
           .select();
 
-        this.setLoadInProject();
+        const { data: descriptionData, error: descriptionError } = await supabase
+          .from("descriptions")
+          .insert([{ project_id: projectData[0].id, short_summary: this.initialProjectDescription }])
+          .select();
+
+        await this.setLoadInProject();
         this.quickModeLoading = false;
         this.showModal = false;
       }
@@ -166,8 +168,8 @@ export default {
         const { data: projects, error: projectsError } = await supabase.from("projects").select("*").eq("user_id", user.id).order("created_at", { ascending: true });
         if (projects.length > 0) {
           this.store.setUserProjects(projects);
-          let lastViewedProject = JSON.parse(localStorage.getItem("ceres-project-id")) || 0;
-          let project = projects.find((project) => project.id === lastViewedProject);
+          let lastViewedProject = JSON.parse(localStorage.getItem("gemini-project-id")) || 0;
+          let project = projects.find((project) => project.id === lastViewedProject) || projects[0];
           this.store.setCurrentProject(project);
         }
       }

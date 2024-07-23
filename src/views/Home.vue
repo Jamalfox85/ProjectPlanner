@@ -11,7 +11,7 @@
             </n-icon>
           </div>
           <div class="project-section-content flex items-center">
-            <h1 class="primary-project-title">{{ this.quickMode ? this.quickModeTitle : this.title?.title || "Home" }}</h1>
+            <h1 class="primary-project-title">{{ this.quickMode ? this.quickModeTitle : this.title || "Home" }}</h1>
             <n-icon class="cursor-pointer" v-if="quickMode && this.quickModeTitle" @click="changeQuickModeTitle">
               <Refresh />
             </n-icon>
@@ -36,14 +36,16 @@
             <div class="project-section-content bg-blue-50">
               <n-tabs type="line" animated :default-value="'short_summary'">
                 <n-tab-pane name="elevator_pitch" tab="Elevator Pitch">
-                  <p class="project-description">{{ description.elevator_pitch }}</p>
+                  <p class="project-description" v-if="description.elevator_pitch">{{ description.elevator_pitch }}</p>
+                  <p v-else class="text-gray-500 text-xs">Visit the <b>Description</b> tab to populate</p>
                 </n-tab-pane>
                 <n-tab-pane name="short_summary" tab="Short Summary">
                   <p class="project-description">{{ description.short_summary }}</p>
                   <n-spin v-if="quickMode && !description.short_summary" />
                 </n-tab-pane>
                 <n-tab-pane name="extended_summary" tab="Extended Summary">
-                  <p class="project-description">{{ description.extended_summary }}</p>
+                  <p class="project-description" v-if="description.extended_summary">{{ description.extended_summary }}</p>
+                  <p v-else class="text-gray-500 text-xs">Visit the <b>Description</b> tab to populate</p>
                 </n-tab-pane>
               </n-tabs>
             </div>
@@ -62,20 +64,20 @@
                   <n-spin v-if="quickMode && !swot.strengths" />
                   <div v-else>
                     <p v-if="swot.strengths && swot.strengths.length > 0" class="m-2" v-for="item in swot.strengths">{{ quickMode ? item : item.text }}</p>
-                    <p v-else class="m-2 text-gray-500 text-xs">No Strengths Added</p>
+                    <p v-else class="m-2 text-gray-500 text-xs">Visit the <b>SWOT</b> tab to populate</p>
                   </div>
                 </n-tab-pane>
                 <n-tab-pane name="weaknesses" tab="Weaknesses">
                   <p v-if="swot.weaknesses && swot.weaknesses.length > 0" class="m-2" v-for="item in swot.weaknesses">{{ quickMode ? item : item.text }}</p>
-                  <p v-else class="m-2 text-gray-500 text-xs">No Weaknesses Added</p>
+                  <p v-else class="m-2 text-gray-500 text-xs">Visit the <b>SWOT</b> tab to populate</p>
                 </n-tab-pane>
                 <n-tab-pane name="opportunities" tab="Opportunities">
                   <p v-if="swot.opportunities && swot.opportunities.length > 0" class="m-2" v-for="item in swot.opportunities">{{ quickMode ? item : item.text }}</p>
-                  <p v-else class="m-2 text-gray-500 text-xs">No Opportunities Added</p>
+                  <p v-else class="m-2 text-gray-500 text-xs">Visit the <b>SWOT</b> tab to populate</p>
                 </n-tab-pane>
                 <n-tab-pane name="threats" tab="Threats">
                   <p v-if="swot.threats && swot.threats.length > 0" class="m-2" v-for="item in swot.threats">{{ quickMode ? item : item.text }}</p>
-                  <p v-else class="m-2 text-gray-500 text-xs">No Threats Added</p>
+                  <p v-else class="m-2 text-gray-500 text-xs">Visit the <b>SWOT</b> tab to populate</p>
                 </n-tab-pane>
               </n-tabs>
             </div>
@@ -91,9 +93,10 @@
               </div>
               <div class="project-section-content">
                 <n-spin v-if="quickMode && !branding.palette" />
-                <div class="project-colors">
+                <div class="project-colors" v-if="branding.palette?.colors.length > 0">
                   <div v-for="color in branding.palette?.colors" class="project-color" :style="{ backgroundColor: color }"></div>
                 </div>
+                <p v-else class="m-2 text-gray-500 text-xs">Visit the <b>Branding</b> tab to populate</p>
               </div>
             </div>
             <!-- Pages -->
@@ -120,14 +123,15 @@
               </n-icon>
             </div>
             <div class="project-section-content feature-section-content">
-              <ul class="project-features w-full">
+              <ul class="project-features w-full" v-if="features.length > 0">
                 <n-collapse>
                   <n-collapse-item v-for="feature in features" :title="feature.title" :name="feature.id" class="feature-item">
                     <div v-if="feature.description">{{ feature.description }}</div>
-                    <div v-else><p class="text-gray-500 text-xs">No Description Added</p></div>
+                    <p v-else class="m-2 text-gray-500 text-xs">Visit the <b>Features</b> tab to add description</p>
                   </n-collapse-item>
                 </n-collapse>
               </ul>
+              <p v-else class="m-2 text-gray-500 text-xs">Visit the <b>Features</b> tab to populate</p>
             </div>
           </div>
         </div>
@@ -193,12 +197,8 @@ export default {
       this.$router.push(route);
     },
     async setNewTitle() {
-      let titles = await this.store.getTitles;
-      if (titles.length > 0) {
-        this.title = titles.find((title) => title.is_current_title);
-      } else {
-        this.title = { title: "Home" };
-      }
+      let currentProject = this.store.getCurrentProject;
+      this.title = currentProject.title;
     },
     async setNewDescription() {
       let descriptions = await this.store.getDescriptions;
@@ -370,7 +370,6 @@ export default {
         }
       }
       &.feature-section-content {
-        border: solid 1px var(--lightgray);
         padding: 1em;
         width: 100%;
         i {

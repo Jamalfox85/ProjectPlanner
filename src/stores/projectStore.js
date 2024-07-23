@@ -54,8 +54,6 @@ export const projectStore = defineStore("projectStore", {
 
       let brandingResponse = await getColorPalette(description);
       this.quickModeDetails.branding.palette = { colors: JSON.parse(brandingResponse) };
-
-      console.log("Quick Mode Data", this.quickModeDetails);
     },
     setCurrentProject(project) {
       this.currentProject = project;
@@ -115,7 +113,6 @@ export const projectStore = defineStore("projectStore", {
       this.descriptions = {};
       this.features = [];
       this.swotItems = [];
-      console.log("Projects cleared");
     },
   },
   getters: {
