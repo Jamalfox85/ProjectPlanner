@@ -118,7 +118,7 @@ export default {
         title: this.title,
         is_current_title: false,
         is_favorite_title: false,
-        project_id: this.store.getcurrentProject?.id,
+        project_id: this.store.getCurrentProject?.id,
       };
       const { data, error } = await supabase.from("titles").insert(newTitle).select();
       this.store.setTitles();
