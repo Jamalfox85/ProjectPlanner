@@ -139,6 +139,7 @@ export default {
       if (error) {
         window.$message.error(error.message);
       } else {
+        let initialTitle = `Project-${randomNumber}`;
         const { data: userData, error: userError } = await supabase
           .from("users")
           .insert([{ user_id: data.user.id, first_name: this.firstName, last_name: this.lastName }])
@@ -147,12 +148,17 @@ export default {
         let randomNumber = Math.floor(Math.random() * (1000 - 100) + 100);
         const { data: projectData, error } = await supabase
           .from("projects")
-          .insert([{ title: `Project-${randomNumber}`, user_id: data.user.id }])
+          .insert([{ title: initialTitle, user_id: data.user.id }])
           .select();
 
         const { data: descriptionData, error: descriptionError } = await supabase
           .from("descriptions")
           .insert([{ project_id: projectData[0].id, short_summary: this.initialProjectDescription }])
+          .select();
+
+        const { data: titleData, error: titleError } = await supabase
+          .from("titles")
+          .insert([{ project_id: projectData[0].id, title: initialTitle, is_current_title: true, is_favorite_title: true }])
           .select();
 
         await this.setLoadInProject();
