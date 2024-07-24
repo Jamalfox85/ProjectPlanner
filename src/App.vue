@@ -103,6 +103,14 @@ export default {
   },
   methods: {
     startQuickVersion() {
+      if (!this.quickModeFirstName.length > 0) {
+        window.$message.error("Please enter your first name");
+        return;
+      }
+      if (!this.quickAppDescription.length > 0) {
+        window.$message.error("Please enter a description of your app");
+        return;
+      }
       this.quickModeLoading = true;
       this.store.setQuickMode(true);
       this.store.setQuickModeDetails(this.quickAppDescription, this.quickModeFirstName);
