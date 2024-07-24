@@ -29,6 +29,18 @@ export const projectStore = defineStore("projectStore", {
       this.quickMode = mode;
     },
     async setQuickModeDetails(description) {
+      const { data, error } = await supabase
+        .from("quickModeEntries")
+        .insert([{ description: description }])
+        .select();
+
+      if (data) {
+        console.log(data);
+      }
+
+      if (error) {
+        console.log(error);
+      }
       let titles = await getTitleRecommendations([], description);
       this.quickModeDetails.titles = JSON.parse(titles);
 
