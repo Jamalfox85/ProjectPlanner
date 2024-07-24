@@ -28,10 +28,10 @@ export const projectStore = defineStore("projectStore", {
     setQuickMode(mode) {
       this.quickMode = mode;
     },
-    async setQuickModeDetails(description) {
+    async setQuickModeDetails(description, firstName) {
       const { data, error } = await supabase
         .from("quickModeEntries")
-        .insert([{ description: description }])
+        .insert([{ description: description, first_name: firstName }])
         .select();
 
       if (data) {

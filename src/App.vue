@@ -11,6 +11,9 @@
           <div v-if="!forceLoginMode" class="new-user-col min-w-1/2 flex flex-col items-center p-2">
             <h2 class="text-center text-lg font-bold mb-2">Just Stopping By?</h2>
             <p class="mb-2">Enter a basic description of your app and we'll try to help you out</p>
+            <b class="mr-auto mt-2">Your First Name</b>
+            <n-input class="my-2" v-model:value="quickModeFirstName" placeholder="First Name" />
+            <b class="mr-auto mt-2">Your App Description</b>
             <n-input type="textarea" v-model:value="quickAppDescription" placeholder="Enter a description of your app" />
             <n-button @click="startQuickVersion" class="lets-get-started-bttn">Lets Get Started</n-button>
             <n-spin class="m-8" v-if="quickModeLoading" />
@@ -74,6 +77,7 @@ export default {
     return {
       showModal: false,
       forceLoginMode: false,
+      quickModeFirstName: "",
       quickAppDescription: "",
       quickModeLoading: false,
       signUpMode: false,
@@ -101,7 +105,7 @@ export default {
     startQuickVersion() {
       this.quickModeLoading = true;
       this.store.setQuickMode(true);
-      this.store.setQuickModeDetails(this.quickAppDescription);
+      this.store.setQuickModeDetails(this.quickAppDescription, this.quickModeFirstName);
     },
     async logIn() {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -182,6 +186,8 @@ export default {
     },
   },
   async mounted() {
+    let test = window;
+    console.log("test", test);
     const loginModalBus = useEventBus("loginModalBus");
     loginModalBus.on((event) => {
       this.forceLoginMode = true;
