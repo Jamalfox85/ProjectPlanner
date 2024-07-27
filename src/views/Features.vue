@@ -145,6 +145,7 @@ export default {
         is_mvp: false,
         project_id: this.store.getCurrentProject?.id,
       };
+      console.log(this.store.getCurrentProject)
       const { data, error } = await supabase.from("features").insert(newFeature).select();
       this.store.setFeatures();
       if (error) {
