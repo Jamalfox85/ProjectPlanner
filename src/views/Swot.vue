@@ -157,6 +157,8 @@ export default {
         this.threats.push({ text: this.newSWOTText });
       }
       window.$message.success("Item added successfully");
+      this.newSWOTText = "";
+      this.newSWOTType = 1;
       this.showAddSWOTDrawer = false;
     },
     async generateSwot() {
