@@ -68,7 +68,7 @@
             <n-select class="mb-8" v-model:value="newSWOTType" :options="SWOTOptions" />
 
             <label class="mb-2">Text</label>
-            <n-input v-model:value="newSWOTText" placeholder="Project Title" class="w-1/2" />
+            <n-input v-model:value="newSWOTText" placeholder="" type="textarea" class="w-1/2" />
           </div>
           <n-button class="rounded" @click="addNewSWOT">Create</n-button>
         </div>
