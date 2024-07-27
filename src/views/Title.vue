@@ -208,7 +208,8 @@ export default {
     },
     async generateTitleRecommendations() {
       this.recommendationsLoading = true;
-      let recommendations = await getTitleRecommendations(this.favoriteTitles, "App to help solo developers plan projects before development");
+      let description = this.store.getDescriptions;
+      let recommendations = await getTitleRecommendations(this.favoriteTitles, description.extended_summary.length > 0 ? description.extended_summary : description.short_summary);
       this.aiTitles = JSON.parse(recommendations);
       this.recommendationsLoading = false;
     },

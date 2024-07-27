@@ -27,4 +27,14 @@ npm run dev
 ```sh
 npm run build
 ```
+
 # ProjectPlanner
+
+To Do Next
+
+- Edit / Prettify app screenshots
+- Prevent users from closing modal on quick mode
+- Find a way to meter usage and add restrictions
+- Twitter Posts
+- Write article
+- Placeholder text for app idea
