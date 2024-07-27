@@ -147,6 +147,15 @@ export default {
         window.$message.error(error.message);
         return;
       }
+      if (this.newSWOTType == 1) {
+        this.strengths.push({ text: this.newSWOTText });
+      } else if (this.newSWOTType == 2) {
+        this.weaknesses.push({ text: this.newSWOTText });
+      } else if (this.newSWOTType == 3) {
+        this.opportunities.push({ text: this.newSWOTText });
+      } else if (this.newSWOTType == 4) {
+        this.threats.push({ text: this.newSWOTText });
+      }
       window.$message.success("Item added successfully");
       this.showAddSWOTDrawer = false;
     },
