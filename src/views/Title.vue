@@ -146,6 +146,7 @@ export default {
         window.$message.success("New Title Added!");
         this.pastTitles.unshift(data[0]);
         this.title = "";
+        this.removeFromAISuggestions(title);
       } else {
         //@ts-ignore
         window.$message.error("Error Adding New Title");
